@@ -7,7 +7,7 @@ Build-Station 3D is a production-bundled application. This document analyzes the
 ### Total Bundle Size: 1.3MB (uncompressed)
 
 ```
-static/js/
+dist/js/
 ├── vendor.bundle.js              901 KB  (Vendor bundle - React + Three.js + Blueprint3D)
 ├── app.bundle.js                 382 KB  (Application code - Build-Station 3D logic)
 ├── lazy.bundle.js                4.2 KB  (Lazy-loaded features)
@@ -350,7 +350,7 @@ If you need to modify the application logic:
 
 2. **Beautify Bundles**:
    ```bash
-   js-beautify static/js/app.bundle.js > app.beautified.js
+   js-beautify dist/js/app.bundle.js > app.beautified.js
    ```
 
 3. **Identify Component Boundaries**:

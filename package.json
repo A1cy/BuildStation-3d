@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "Build-Station 3D - Interactive Room Configurator",
   "scripts": {
-    "start": "http-server -p 3000 -c-1 --cors",
+    "start": "http-server public -p 3000 -c-1 --cors",
     "dev": "npm start",
-    "serve": "http-server -p 3000 -c-1 --cors -o",
-    "build": "echo 'Already built - production bundle'",
-    "analyze": "source-map-explorer 'static/js/*.bundle.js' --html bundle-report.html",
+    "serve": "http-server public -p 3000 -c-1 --cors -o",
+    "build": "echo 'Already built - production bundle in dist/'",
+    "analyze": "source-map-explorer 'dist/js/*.bundle.js' --html bundle-report.html",
     "test": "echo 'Live version: https://threejs-room-configurator.netlify.app/'",
-    "check-assets": "find Blueprint3D-assets -type f | wc -l"
+    "check-assets": "find public/assets -type f | wc -l"
   },
   "keywords": [
     "3d",

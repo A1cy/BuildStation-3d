@@ -50,26 +50,43 @@ npm run check-assets  # Count total asset files
 ## Project Structure
 
 ```
-build-station-3d/
-├── index.html                 # Application entry point
-├── manifest.json             # PWA manifest
-├── static/                   # Compiled bundles
-│   ├── js/                  # React + Three.js bundles
-│   │   ├── vendor.bundle.js         (901KB) - Vendor bundle
+BuildStation-3d/
+├── public/                  # Static public files
+│   ├── index.html          # Application entry point
+│   ├── manifest.json       # PWA manifest
+│   ├── favicon.ico         # Site favicon
+│   ├── logo192.png         # PWA icon 192x192
+│   ├── logo512.png         # PWA icon 512x512
+│   ├── robots.txt          # SEO robots
+│   └── assets/             # Public assets
+│       └── models/         # 3D models & textures
+│           ├── furniture/  # Organized by category
+│           │   ├── bedroom/   # 8 bedroom models
+│           │   ├── bathroom/  # 21 bathroom models
+│           │   └── desk/      # 20 desk models
+│           ├── textures/   # 23 material textures
+│           └── rooms/      # 2 room presets
+├── dist/                   # Compiled bundles (build output)
+│   ├── js/                # JavaScript bundles
+│   │   ├── vendor.bundle.js         (901KB) - React + Three.js + Blueprint3D
 │   │   ├── app.bundle.js            (382KB) - Application code
-│   │   ├── lazy.bundle.js           (4.2KB) - Lazy chunks
-│   │   └── webpack-runtime.js       (2.3KB) - Module loader
-│   └── css/                 # Stylesheets
-│       ├── vendor.bundle.css        (12KB) - Third-party styles
-│       └── app.bundle.css           (6.2KB) - Application styles
-├── Blueprint3D-assets/      # 3D models & textures
-│   ├── models/glb/         # 100+ furniture GLB files
-│   ├── textures/           # Material textures
-│   ├── rooms/              # Room presets
-│   └── tmp/                # Temporary assets
-├── screenshots/            # Application screenshots
-├── docs/                   # Additional documentation
-└── package.json           # Dependencies & scripts
+│   │   ├── lazy.bundle.js           (4.2KB) - Lazy-loaded features
+│   │   └── webpack-runtime.js       (2.3KB) - Webpack module loader
+│   ├── css/               # CSS bundles
+│   │   ├── vendor.bundle.css        (12KB) - Third-party styles
+│   │   └── app.bundle.css           (6.2KB) - Application styles
+│   └── asset-manifest.json # Asset mapping
+├── docs/                   # Documentation
+│   └── BUNDLE_ANALYSIS.md # Bundle composition analysis
+├── scripts/               # Utility scripts
+│   └── serve.sh          # Development server script
+├── .vscode/              # VSCode settings
+├── .editorconfig         # Editor configuration
+├── .gitignore           # Git ignore rules
+├── LICENSE              # MIT License
+├── netlify.toml         # Netlify deployment configuration
+├── package.json         # Dependencies & scripts
+└── README.md           # Project documentation
 ```
 
 ## Technology Stack
