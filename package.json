@@ -8,7 +8,9 @@
     "serve": "http-server public -p 3000 -c-1 --cors -o",
     "build": "echo 'Already built - production bundle in dist/'",
     "analyze": "source-map-explorer 'dist/js/*.bundle.js' --html bundle-report.html",
-    "test": "echo 'Live version: https://threejs-room-configurator.netlify.app/'",
+    "deploy": "vercel --prod",
+    "preview": "vercel",
+    "test": "echo 'Deploy to Vercel: npm run deploy'",
     "check-assets": "find public/assets -type f | wc -l"
   },
   "keywords": [
@@ -23,6 +25,9 @@
   "dependencies": {},
   "devDependencies": {
     "http-server": "^14.1.1",
-    "source-map-explorer": "^2.5.3"
+    "source-map-explorer": "^2.5.3",
+    "js-beautify": "^1.14.11",
+    "prettier": "^3.1.0",
+    "webpack-bundle-analyzer": "^4.10.1"
   }
 }

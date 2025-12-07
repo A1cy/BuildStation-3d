@@ -1,0 +1,53 @@
+/* PropertyPanel - Material and style configuration styles */
+
+.property-panel {
+  padding: 15px;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
+.section-header {
+  font-weight: 600;
+  margin: 15px 0 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+.textures-container,
+.styles-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.texture-item,
+.style-item {
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  padding: 5px;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.texture-item:hover,
+.style-item:hover {
+  border-color: #007bff;
+  background: #f8f9fa;
+}
+
+.texture-item .thumbnail,
+.style-item .thumbnail {
+  width: 100%;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.texture-item .label,
+.style-item .label {
+  font-size: 11px;
+  color: #666;
+}

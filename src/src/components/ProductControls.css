@@ -1,0 +1,44 @@
+/* ProductControls - Floating toolbar styles */
+
+.float-toolbar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  padding: 10px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+.float-toolbar-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+  border: 1px solid #ddd;
+}
+
+.float-toolbar-button:hover {
+  background: #f0f0f0;
+  border-color: #999;
+}
+
+.float-toolbar-button.toggled {
+  background: #007bff;
+  color: white;
+  border-color: #0056b3;
+}
+
+.float-toolbar .hr {
+  width: 1px;
+  background: #ddd;
+  margin: 0 5px;
+}

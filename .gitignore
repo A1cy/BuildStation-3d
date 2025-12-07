@@ -33,6 +33,10 @@ dist/
 build/
 bundle-report.html
 
+# Bundle analysis (reverse-engineering)
+beautified/
+src-workspace/
+
 # Temporary files
 tmp/
 temp/

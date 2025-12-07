@@ -39,12 +39,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ### Available Scripts
 
 ```bash
-npm start          # Start local development server (port 3000)
-npm run dev        # Alias for npm start
-npm run serve      # Start server and open browser automatically
-npm run analyze    # Analyze bundle composition (generates bundle-report.html)
-npm run test       # Display live version URL
-npm run check-assets  # Count total asset files
+npm start            # Start local development server (port 3000)
+npm run dev          # Alias for npm start
+npm run serve        # Start server and open browser automatically
+npm run analyze      # Analyze bundle composition (generates bundle-report.html)
+npm run deploy       # Deploy to Vercel (production)
+npm run preview      # Deploy preview to Vercel
+npm run check-assets # Count total asset files
 ```
 
 ## Project Structure
@@ -80,13 +81,18 @@ BuildStation-3d/
 │   └── BUNDLE_ANALYSIS.md # Bundle composition analysis
 ├── scripts/               # Utility scripts
 │   └── serve.sh          # Development server script
-├── .vscode/              # VSCode settings
-├── .editorconfig         # Editor configuration
-├── .gitignore           # Git ignore rules
-├── LICENSE              # MIT License
-├── netlify.toml         # Netlify deployment configuration
-├── package.json         # Dependencies & scripts
-└── README.md           # Project documentation
+├── src/                   # Source code (reverse-engineered)
+│   └── src/              # Application source
+│       ├── core/         # Core systems (Configuration, Utils, Blueprint3D)
+│       └── components/   # React components
+├── beautified/          # Beautified bundles for analysis
+├── .vscode/             # VSCode settings
+├── .editorconfig        # Editor configuration
+├── .gitignore          # Git ignore rules
+├── LICENSE             # MIT License
+├── vercel.json         # Vercel deployment configuration
+├── package.json        # Dependencies & scripts
+└── README.md          # Project documentation
 ```
 
 ## Technology Stack
@@ -122,16 +128,32 @@ BuildStation-3d/
 
 ## Deployment
 
-### Netlify Configuration
+### Vercel Deployment
 
-The project is configured for seamless Netlify deployment with:
-- SPA routing (all routes redirect to `index.html`)
+The project is configured for seamless Vercel deployment with:
+- SPA routing (all routes rewrite to `index.html`)
 - CORS enabled for asset loading
-- Optimized cache headers for static assets
+- Optimized cache headers for static assets (1-year caching for bundles/models)
+- Security headers (X-Frame-Options, X-Content-Type-Options, etc.)
+
+#### Deploy to Vercel
+
+```bash
+# Install Vercel CLI globally (one-time)
+npm install -g vercel
+
+# Deploy to production
+npm run deploy
+
+# Deploy preview (staging)
+npm run preview
+```
+
+Or use the [Vercel Dashboard](https://vercel.com/new) to import this repository directly.
 
 ### Live Demo
 
-Previous version: [https://threejs-room-configurator.netlify.app/](https://threejs-room-configurator.netlify.app/)
+Deployment URL will be provided after first Vercel deployment.
 
 ## Development Notes
 
@@ -152,14 +174,27 @@ The application is already compiled and optimized. We serve the production bundl
 - Exact feature parity with production
 - Simplified setup (no webpack/babel configuration)
 
-### Future Development
+### Development Progress
 
-To modify the application logic, you would need to:
-1. Reverse-engineer components from bundles
-2. Recreate source structure
-3. Set up build tooling (Vite/Webpack)
+**Phase 3 (Reverse Engineering): COMPLETE ✅**
 
-See `docs/BUNDLE_ANALYSIS.md` for more details.
+We've successfully reverse-engineered the production bundles into clean, modular source code:
+- ✅ 18 components extracted (~4,500 lines)
+- ✅ 100% JSDoc documentation coverage
+- ✅ ES6 modernization (classes, arrow functions, const/let)
+- ✅ Modular architecture with clean separation of concerns
+
+**Extracted Components:**
+- Core systems: Configuration, Dimensioning, Utils
+- Blueprint3D entities: Wall, Corner, HalfEdge, Room, Canvas2D
+- React components: App, Blueprint3D, PropertyPanel, ProductControls, FloorPlanView, Controls
+
+See `PHASE_3_PROGRESS.md` for detailed extraction documentation.
+
+**Next Steps:**
+- Phase 4: Resolve dependencies and integrate Three.js
+- Phase 5: Test extracted code against original functionality
+- Phase 7: Complete documentation and development guide
 
 ## Browser Support
 
