@@ -1,0 +1,11 @@
+[
+  {
+    "session_id": "d3bd2678-2b96-4e36-9607-d413f234b6ef",
+    "transcript_path": "/home/a1xai/.claude/projects/-mnt-c-A1-Codes-threejs-3d-room-designer/d3bd2678-2b96-4e36-9607-d413f234b6ef.jsonl",
+    "cwd": "/mnt/c/A1 Codes/threejs-3d-room-designer/static/css",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null,
+    "logged_at": "2025-12-07T14:54:10.899777"
+  }
+]

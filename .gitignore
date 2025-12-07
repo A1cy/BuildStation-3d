@@ -29,7 +29,7 @@ Thumbs.db
 *~
 
 # Build artifacts
-dist/
+# dist/ - REMOVED: We need dist/ in git for Vercel deployment
 build/
 bundle-report.html
 

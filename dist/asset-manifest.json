@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/dist/css/app.bundle.css",
+    "main.js": "/dist/js/app.bundle.js",
+    "runtime-main.js": "/dist/js/webpack-runtime.js",
+    "vendor.css": "/dist/css/vendor.bundle.css",
+    "vendor.js": "/dist/js/vendor.bundle.js",
+    "lazy.js": "/dist/js/lazy.bundle.js",
+    "index.html": "/index.html",
+    "vendor.license": "/dist/js/vendor.bundle.LICENSE.txt"
+  },
+  "entrypoints": [
+    "dist/js/webpack-runtime.js",
+    "dist/css/vendor.bundle.css",
+    "dist/js/vendor.bundle.js",
+    "dist/css/app.bundle.css",
+    "dist/js/app.bundle.js"
+  ]
+}

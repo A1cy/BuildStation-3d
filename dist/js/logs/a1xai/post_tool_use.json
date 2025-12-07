@@ -1,0 +1,296 @@
+[
+  {
+    "session_id": "d3bd2678-2b96-4e36-9607-d413f234b6ef",
+    "transcript_path": "/home/a1xai/.claude/projects/-mnt-c-A1-Codes-threejs-3d-room-designer/d3bd2678-2b96-4e36-9607-d413f234b6ef.jsonl",
+    "cwd": "/mnt/c/A1 Codes/threejs-3d-room-designer/static/js",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PostToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /mnt/c/A1\\ Codes/threejs-3d-room-designer/static/js && mv runtime-main.31a57aa0.js webpack-runtime.js && mv 2.50441937.chunk.js vendor.bundle.js && mv main.c8b87c3e.chunk.js app.bundle.js && mv 3.58b045a3.chunk.js lazy.bundle.js && mv 2.50441937.chunk.js.LICENSE.txt vendor.bundle.LICENSE.txt && ls -lh",
+      "description": "Rename JavaScript bundles"
+    },
+    "tool_response": {
+      "stdout": "A1 \ud83d\ude80 AI (Anthropic API Mode)\ntotal 1.3M\n-rwxrwxrwx 1 a1xai a1xai 382K Dec  7 13:51 app.bundle.js\n-rwxrwxrwx 1 a1xai a1xai 4.2K Dec  7 13:51 lazy.bundle.js\n-rwxrwxrwx 1 a1xai a1xai 1.1K Dec  7 13:51 vendor.bundle.LICENSE.txt\n-rwxrwxrwx 1 a1xai a1xai 901K Dec  7 13:51 vendor.bundle.js\n-rwxrwxrwx 1 a1xai a1xai 2.3K Dec  7 13:51 webpack-runtime.js",
+      "stderr": "",
+      "interrupted": false,
+      "isImage": false
+    },
+    "tool_use_id": "toolu_01UjvGWPTUdZxK8zS6dEr1D5",
+    "a1xai_timestamp": "2025-12-07T14:52:34.374104",
+    "a1xai_hook_version": "7.0_optimized",
+    "a1xai_framework": "SuperClaude",
+    "a1xai_analysis": {
+      "tool_type": "Bash",
+      "success": false,
+      "execution_time": 0,
+      "timestamp": "2025-12-07T14:52:34.369617"
+    }
+  },
+  {
+    "session_id": "d3bd2678-2b96-4e36-9607-d413f234b6ef",
+    "transcript_path": "/home/a1xai/.claude/projects/-mnt-c-A1-Codes-threejs-3d-room-designer/d3bd2678-2b96-4e36-9607-d413f234b6ef.jsonl",
+    "cwd": "/mnt/c/A1 Codes/threejs-3d-room-designer/static/js",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PostToolUse",
+    "tool_name": "TodoWrite",
+    "tool_input": {
+      "todos": [
+        {
+          "content": "Phase 5: Git Migration Complete (push manually)",
+          "status": "completed",
+          "activeForm": "Git Migration Complete"
+        },
+        {
+          "content": "Phase 6: Rename JavaScript bundles (5 files)",
+          "status": "completed",
+          "activeForm": "Renaming JavaScript bundles"
+        },
+        {
+          "content": "Phase 6: Rename CSS bundles (2 files)",
+          "status": "in_progress",
+          "activeForm": "Renaming CSS bundles"
+        },
+        {
+          "content": "Phase 6: Update index.html bundle references",
+          "status": "pending",
+          "activeForm": "Updating index.html references"
+        },
+        {
+          "content": "Phase 6: Update asset-manifest.json paths",
+          "status": "pending",
+          "activeForm": "Updating asset-manifest.json"
+        },
+        {
+          "content": "Phase 6: Update documentation with new bundle names",
+          "status": "pending",
+          "activeForm": "Updating documentation"
+        },
+        {
+          "content": "Phase 6: Test application and commit changes",
+          "status": "pending",
+          "activeForm": "Testing and committing"
+        },
+        {
+          "content": "Phase 8: Create best practices directory structure",
+          "status": "pending",
+          "activeForm": "Creating directory structure"
+        },
+        {
+          "content": "Phase 8: Move files to public/ directory",
+          "status": "pending",
+          "activeForm": "Moving files to public/"
+        },
+        {
+          "content": "Phase 8: Organize 3D models by category",
+          "status": "pending",
+          "activeForm": "Organizing 3D models"
+        },
+        {
+          "content": "Phase 8: Move bundles to dist/",
+          "status": "pending",
+          "activeForm": "Moving bundles to dist/"
+        },
+        {
+          "content": "Phase 8: Update all file path references",
+          "status": "pending",
+          "activeForm": "Updating file references"
+        },
+        {
+          "content": "Phase 8: Create LICENSE and config files",
+          "status": "pending",
+          "activeForm": "Creating LICENSE and configs"
+        },
+        {
+          "content": "Phase 8: Final testing and commit",
+          "status": "pending",
+          "activeForm": "Final testing and commit"
+        }
+      ]
+    },
+    "tool_response": {
+      "oldTodos": [
+        {
+          "content": "Phase 5: Git Migration Complete (push manually)",
+          "status": "completed",
+          "activeForm": "Git Migration Complete"
+        },
+        {
+          "content": "Phase 6: Rename JavaScript bundles (5 files)",
+          "status": "in_progress",
+          "activeForm": "Renaming JavaScript bundles"
+        },
+        {
+          "content": "Phase 6: Rename CSS bundles (2 files)",
+          "status": "pending",
+          "activeForm": "Renaming CSS bundles"
+        },
+        {
+          "content": "Phase 6: Update index.html bundle references",
+          "status": "pending",
+          "activeForm": "Updating index.html references"
+        },
+        {
+          "content": "Phase 6: Update asset-manifest.json paths",
+          "status": "pending",
+          "activeForm": "Updating asset-manifest.json"
+        },
+        {
+          "content": "Phase 6: Update documentation with new bundle names",
+          "status": "pending",
+          "activeForm": "Updating documentation"
+        },
+        {
+          "content": "Phase 6: Test application and commit changes",
+          "status": "pending",
+          "activeForm": "Testing and committing"
+        },
+        {
+          "content": "Phase 8: Create best practices directory structure",
+          "status": "pending",
+          "activeForm": "Creating directory structure"
+        },
+        {
+          "content": "Phase 8: Move files to public/ directory",
+          "status": "pending",
+          "activeForm": "Moving files to public/"
+        },
+        {
+          "content": "Phase 8: Organize 3D models by category",
+          "status": "pending",
+          "activeForm": "Organizing 3D models"
+        },
+        {
+          "content": "Phase 8: Move bundles to dist/",
+          "status": "pending",
+          "activeForm": "Moving bundles to dist/"
+        },
+        {
+          "content": "Phase 8: Update all file path references",
+          "status": "pending",
+          "activeForm": "Updating file references"
+        },
+        {
+          "content": "Phase 8: Create LICENSE and config files",
+          "status": "pending",
+          "activeForm": "Creating LICENSE and configs"
+        },
+        {
+          "content": "Phase 8: Final testing and commit",
+          "status": "pending",
+          "activeForm": "Final testing and commit"
+        }
+      ],
+      "newTodos": [
+        {
+          "content": "Phase 5: Git Migration Complete (push manually)",
+          "status": "completed",
+          "activeForm": "Git Migration Complete"
+        },
+        {
+          "content": "Phase 6: Rename JavaScript bundles (5 files)",
+          "status": "completed",
+          "activeForm": "Renaming JavaScript bundles"
+        },
+        {
+          "content": "Phase 6: Rename CSS bundles (2 files)",
+          "status": "in_progress",
+          "activeForm": "Renaming CSS bundles"
+        },
+        {
+          "content": "Phase 6: Update index.html bundle references",
+          "status": "pending",
+          "activeForm": "Updating index.html references"
+        },
+        {
+          "content": "Phase 6: Update asset-manifest.json paths",
+          "status": "pending",
+          "activeForm": "Updating asset-manifest.json"
+        },
+        {
+          "content": "Phase 6: Update documentation with new bundle names",
+          "status": "pending",
+          "activeForm": "Updating documentation"
+        },
+        {
+          "content": "Phase 6: Test application and commit changes",
+          "status": "pending",
+          "activeForm": "Testing and committing"
+        },
+        {
+          "content": "Phase 8: Create best practices directory structure",
+          "status": "pending",
+          "activeForm": "Creating directory structure"
+        },
+        {
+          "content": "Phase 8: Move files to public/ directory",
+          "status": "pending",
+          "activeForm": "Moving files to public/"
+        },
+        {
+          "content": "Phase 8: Organize 3D models by category",
+          "status": "pending",
+          "activeForm": "Organizing 3D models"
+        },
+        {
+          "content": "Phase 8: Move bundles to dist/",
+          "status": "pending",
+          "activeForm": "Moving bundles to dist/"
+        },
+        {
+          "content": "Phase 8: Update all file path references",
+          "status": "pending",
+          "activeForm": "Updating file references"
+        },
+        {
+          "content": "Phase 8: Create LICENSE and config files",
+          "status": "pending",
+          "activeForm": "Creating LICENSE and configs"
+        },
+        {
+          "content": "Phase 8: Final testing and commit",
+          "status": "pending",
+          "activeForm": "Final testing and commit"
+        }
+      ]
+    },
+    "tool_use_id": "toolu_015pmsNtzVJNfo4jAeZCHwEN",
+    "a1xai_timestamp": "2025-12-07T14:52:46.104461",
+    "a1xai_hook_version": "7.0_optimized",
+    "a1xai_framework": "SuperClaude",
+    "a1xai_analysis": {
+      "tool_type": "TodoWrite",
+      "success": false,
+      "execution_time": 0,
+      "timestamp": "2025-12-07T14:52:46.102590"
+    }
+  },
+  {
+    "session_id": "d3bd2678-2b96-4e36-9607-d413f234b6ef",
+    "transcript_path": "/home/a1xai/.claude/projects/-mnt-c-A1-Codes-threejs-3d-room-designer/d3bd2678-2b96-4e36-9607-d413f234b6ef.jsonl",
+    "cwd": "/mnt/c/A1 Codes/threejs-3d-room-designer/dist/js",
+    "permission_mode": "plan",
+    "hook_event_name": "PostToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /mnt/c/A1\\ Codes/threejs-3d-room-designer/public/dist/js && head -n 50 app.bundle.js | cat",
+      "description": "Examine first 50 lines of app bundle"
+    },
+    "tool_response": {
+      "stdout": "A1 \ud83d\ude80 AI (Anthropic API Mode)\n(this[\"webpackJsonpblueprint3d-react-test\"]=this[\"webpackJsonpblueprint3d-react-test\"]||[]).push([[0],{34:function(e){e.exports=JSON.parse('{\"floorplan\":{\"corners\":{\"f90da5e3-9e0e-eba7-173d-eb0b071e838e\":{\"x\":-3,\"y\":2},\"da026c08-d76a-a944-8e7b-096b752da9ed\":{\"x\":3,\"y\":2},\"4e3d65cb-54c0-0681-28bf-bddcc7bdb571\":{\"x\":3,\"y\":-2},\"71d4f128-ae80-3d58-9bd2-711c6ce6cdf2\":{\"x\":-3,\"y\":-2}},\"walls\":[{\"corner1\":\"71d4f128-ae80-3d58-9bd2-711c6ce6cdf2\",\"corner2\":\"f90da5e3-9e0e-eba7-173d-eb0b071e838e\",\"frontTexture\":{\"url\":\"Blueprint3D-assets/rooms/textures/blank.png\",\"stretch\":true,\"scale\":0},\"backTexture\":{\"url\":\"Blueprint3D-assets/rooms/textures/blank.png\",\"stretch\":true,\"scale\":0}},{\"corner1\":\"f90da5e3-9e0e-eba7-173d-eb0b071e838e\",\"corner2\":\"da026c08-d76a-a944-8e7b-096b752da9ed\",\"frontTexture\":{\"url\":\"Blueprint3D-assets/rooms/textures/blank.png\",\"stretch\":true,\"scale\":0},\"backTexture\":{\"url\":\"Blueprint3D-assets/rooms/textures/blank.png\",\"stretch\":true,\"scale\":0}},{\"corner1\":\"da026c08-d76a-a944-8e7b-096b752da9ed\",\"corner2\":\"4e3d65cb-54c0-0681-28bf-bddcc7bdb571\",\"frontTexture\":{\"url\":\"Blueprint3D-assets/rooms/textures/blank.png\",\"stretch\":true,\"scale\":0},\"backTexture\":{\"url\":\"Blueprint3D-assets/rooms/textures/blank.png\",\"stretch\":true,\"scale\":0}},{\"corner1\":\"4e3d65cb-54c0-0681-28bf-bddcc7bdb571\",\"corner2\":\"71d4f128-ae80-3d58-9bd2-711c6ce6cdf2\",\"frontTexture\":{\"url\":\"Blueprint3D-assets/rooms/textures/blank.png\",\"stretch\":true,\"scale\":0},\"backTexture\":{\"url\":\"Blueprint3D-assets/rooms/textures/blank.png\",\"stretch\":true,\"scale\":0}}],\"wallTextures\":[],\"floorTextures\":{},\"newFloorTextures\":{}},\"items\":[]}')},52:function(e,t,a){},56:function(e,t,a){},57:function(e,t,a){\"use strict\";a.r(t);var l={};a.r(l),a.d(l,\"dimInch\",(function(){return S})),a.d(l,\"dimFeet\",(function(){return H})),a.d(l,\"dimMeter\",(function(){return C})),a.d(l,\"dimCentiMeter\",(function(){return B})),a.d(l,\"dimMilliMeter\",(function(){return w})),a.d(l,\"unitScale\",(function(){return O})),a.d(l,\"Dimensioning\",(function(){return j}));var n={};a.r(n),a.d(n,\"configDimUnit\",(function(){return P})),a.d(n,\"configDefaultPathPrefix\",(function(){return F})),a.d(n,\"configWallHeight\",(function(){return E})),a.d(n,\"configWallThickness\",(function(){return M})),a.d(n,\"configSceneLocked\",(function(){return W})),a.d(n,\"configXRayMode\",(function(){return G})),a.d(n,\"configSnapMode\",(function(){return R})),a.d(n,\"configDimensionVisible\",(function(){return I})),a.d(n,\"Configuration\",(function(){return z}));var i={};a.r(i),a.d(i,\"ELogContext\",(function(){return N})),a.d(i,\"ELogLevel\",(function(){return V})),a.d(i,\"logContext\",(function(){return A})),a.d(i,\"isLogging\",(function(){return K})),a.d(i,\"log\",(function(){return X}));var s={};a.r(s),a.d(s,\"Utils\",(function(){return Q}));var o={};a.r(o),a.d(o,\"Version\",(function(){return J}));var m={};a.r(m),a.d(m,\"BP3D_EVENT_CONFIG_CHANGED\",(function(){return q})),a.d(m,\"BP3D_EVENT_LINKED_ITEMS_CHANGED\",(function(){return Z})),a.d(m,\"BP3D_EVENT_HIGHLIGHT_CHANGED\",(function(){return $}));var d={};a.r(d),a.d(d,\"Factory\",(function(){return lt}));var b=a(6),r=a.n(b),p=a(23),c=a.n(p),h=a(10),y=a.n(h),u=a(16),_=a(1),g=a(3),x=a(4),D=a(5),f=a(11),L=a(7),v=a(2),k=function(e){Object(x.a)(a,e);var t=Object(D.a)(a);function a(){return Object(_.a)(this,a),t.apply(this,arguments)}return Object(g.a)(a,[{key:\"render\",value:function(){var e=this,t=this.props.hidden;return Object(v.jsx)(\"div\",{style:{display:t?\"none\":\"inherit\",width:\"100%\",height:\"100%\"},children:Object(v.jsx)(\"div\",{style:{width:\"100%\",height:\"100%\"},ref:function(t){return\"function\"===typeof e.props.onDomLoaded&&e.props.onDomLoaded(t)}})})}}]),a}(r.a.Component),T=a(9),S=\"inch\",H=\"ft\",C=\"m\",B=\"cm\",w=\"mm\",O=1,j=function(){function e(){Object(_.a)(this,e)}return Object(g.a)(e,null,[{key:\"cmToMeasure\",value:function(e){switch(ee.Configuration.getStringValue(ee.configDimUnit)){case S:return\"\".concat(Math.round(e/2.54),'\"');case H:var t=.3937*e/12,a=Math.floor(t),l=Math.round(12*(t-a));return\"\".concat(a,\"'\").concat(l,'\"');case w:return\"\".concat(Math.round(10*e),\" mm\");case B:return\"\".concat(Math.round(10*e)/10,\" cm\");case C:default:return\"\".concat(Math.round(10*e)/1e3,\" m\")}}}]),e}(),P=\"dimUnit\",F=\"defaultPathPrefix\",E=\"wallHeight\",M=\"wallThickness\",W=\"scene-locked\",G=\"xRay\",R=\"snap\",I=\"dimensionVisible\",U=Object({NODE_ENV:\"production\",PUBLIC_URL:\"\",WDS_SOCKET_HOST:void 0,WDS_SOCKET_PATH:void 0,WDS_SOCKET_PORT:void 0,FAST_REFRESH:!0,REACT_APP_ASSETS_PREFIX:\"https://blueprint3d-react-dist.netlify.app\",REACT_APP_ENV_HDR:\"/Blueprint3D-assets/textures/room-hdr-01.jpg\"}).REACT_APP_BLUEPRINT_ASSETS_PREFIX||\"\",z=function(){function e(){Object(_.a)(this,e)}return Object(g.a)(e,null,[{key:\"setValue\",value:function(e,t){this.data[e]=t,document.dispatchEvent(new CustomEvent(ee.BP3D_EVENT_CONFIG_CHANGED,{detail:Object(T.a)({},e,t)}))}},{key:\"getStringValue\",value:function(e){switch(e){case P:case F:return this.data[e];default:throw new Error(\"Invalid string configuration parameter: \"+e)}}},{key:\"getBooleanValue\",value:function(e){switch(e){case W:case G:case R:case I:return this.data[e];default:throw new Error(\"Invalid boolean configuration parameter: \"+e)}}},{key:\"getNumericValue\",value:function(e){switch(e){case E:case M:return this.data[e];default:throw new Error(\"Invalid numeric configuration parameter: \"+e)}}}]),e}();z.data={defaultPathPrefix:\"\".concat(U,\"Blueprint3D-assets/\"),dimUnit:S,wallHeight:2.5,wallThickness:.1,sceneLocked:!1,xRay:!1,snap:!0,dimensionVisible:!0};var N={None:\"None\",All:\"All\",Interaction2d:\"Interaction2d\",Item:\"Item\",Wall:\"Wall\",Room:\"Room\"},V={Information:\"Information\",Warning:\"Warning\",Error:\"Error\",Fatal:\"Fatal\",Debug:\"Debug\"},A=N.None;function K(e,t){return A===N.All||A===e||t===V.Warning||t===V.Error||t===V.Fatal}function X(e,t,a){if(!1!==K(e,t)){switch(t){case V.Information:\"[INFO_] \";break;case V.Warning:\"[WARING] \";break;case V.Error:\"[ERROR] \";break;case V.Fatal:\"[FATAL] \";break;case V.Debug:\"[DEBUG] \"}}}var Y=a(18),Q=function(){function e(){Object(_.a)(this,e)}return Object(g.a)(e,null,[{key:\"pointDistanceFromLine\",value:function(t,a,l,n,i,s){var o=e.closestPointOnLine(t,a,l,n,i,s),m=t-o.x,d=a-o.y;return Math.sqrt(m*m+d*d)}},{key:\"closestPointOnLine\",value:function(e,t,a,l,n,i){var s,o,m=n-a,d=i-l,b=((e-a)*m+(t-l)*d)/(m*m+d*d);return b<0||a===n&&l===i?(s=a,o=l):b>1?(s=n,o=i):(s=a+b*m,o=l+b*d),{x:s,y:o}}},{key:\"distance\",value:function(e,t,a,l){return Math.sqrt(Math.pow(a-e,2)+Math.pow(l-t,2))}},{key:\"angle\",value:function(e,t,a,l){var n=e*a+t*l,i=e*l-t*a;return-Math.atan2(i,n)}},{key:\"angle2pi\",value:function(t,a,l,n){var i=e.angle(t,a,l,n);return i<0&&(i+=2*Math.PI),i}},{key:\"isClockwise\",value:function(t){for(var a=Math.min(0,Math.min.apply(null,e.map(t,(function(e){return e.x})))),l=Math.min(0,Math.min.apply(null,e.map(t,(function(e){return e.x})))),n=e.map(t,(function(e){return{x:e.x-a,y:e.y-l}})),i=0,s=0;s<n.length;s++){var o,m=n[s];i+=((o=s===n.length-1?n[0]:n[s+1]).x-m.x)*(o.y+m.y)}return i>=0}},{key:\"guid\",value:function(){var e=function(){return Math.floor(65536*(1+Math.random())).toString(16).slice(1)};return\"\".concat(e()+e(),\"-\").concat(e(),\"-\").concat(e(),\"-\").concat(e(),\"-\").concat(e()).concat(e()).concat(e())}},{key:\"polygonPolygonIntersect\",value:function(t,a){for(var l=0;l<t.length;l++){var n,i=t[l];if(n=l===t.length-1?t[0]:t[l+1],e.linePolygonIntersect(i.x,i.y,n.x,n.y,a))return!0}return!1}},{key:\"linePolygonIntersect\",value:function(t,a,l,n,i){for(var s=0;s<i.length;s++){var o,m=i[s];if(o=s===i.length-1?i[0]:i[s+1],e.lineLineIntersect(t,a,l,n,m.x,m.y,o.x,o.y))return!0}return!1}},{key:\"lineLineIntersect\",value:function(e,t,a,l,n,i,s,o){function m(e,t,a){var l=e.x,n=e.y,i=t.x,s=t.y,o=a.x;return(a.y-n)*(i-l)>(s-n)*(o-l)}var d={x:e,y:t},b={x:a,y:l},r={x:n,y:i},p={x:s,y:o};return m(d,r,p)!==m(b,r,p)&&m(d,b,r)!==m(d,b,p)}},{key:\"pointInPolygon\",value:function(t,a,l,n,i){var s=0,o=0;if(void 0===n||void 0===i){for(var m=0;m<l.length;m++)s=Math.min(s,l[m].x),o=Math.min(s,l[m].y);n=s-10,i=o-10}var d=0;for(m=0;m<l.length;m++){var b,r=l[m];b=m===l.length-1?l[0]:l[m+1],e.lineLineIntersect(n,i,t,a,r.x,r.y,b.x,b.y)&&d++}return d%2===1}},{key:\"polygonInsidePolygon\",value:function(t,a,l,n){l=l||0,n=n||0;var i,s=Object(L.a)(t);try{for(s.s();!(i=s.n()).done;){var o=i.value;if(!e.pointInPolygon(o.x,o.y,a,l,n))return!1}}catch(m){s.e(m)}finally{s.f()}return!0}},{key:\"polygonOutsidePolygon\",value:function(t,a,l,n){l=l||0,n=n||0;var i,s=Object(L.a)(t);try{for(s.s();!(i=s.n()).done;){var o=i.value;if(e.pointInPolygon(o.x,o.y,a,l,n))return!1}}catch(m){s.e(m)}finally{s.f()}return!0}},{key:\"forEach\",value:function(e,t){var a,l=Object(L.a)(e);try{for(l.s();!(a=l.n()).done;){t(a.value)}}catch(n){l.e(n)}finally{l.f()}}},{key:\"forEachIndexed\",value:function(e,t){var a,l=Object(L.a)(e.entries());try{for(l.s();!(a=l.n()).done;){var n=Object(Y.a)(a.value,2);t(n[0],n[1])}}catch(i){l.e(i)}finally{l.f()}}},{key:\"map\",value:function(e,t){var a=[];return e.forEach((function(e){a.push(t(e))})),a}},{key:\"removeIf\",value:function(e,t){var a=[];return e.forEach((function(e){t(e)||a.push(e)})),a}},{key:\"cycle\",value:function(e,t){for(var a=e.slice(0),l=0;l<t;l++){var n=a.shift();a.push(n)}return a}},{key:\"unique\",value:function(e,t){var a,l=[],n={},i=Object(L.a)(e);try{for(i.s();!(a=i.n()).done;){var s=a.value;n.hasOwnProperty(s)||(l.push(s),n[t(s)]=!0)}}catch(o){i.e(o)}finally{i.f()}return l}},{key:\"removeValue\",value:function(e,t){for(var a=e.length-1;a>=0;a--)e[a]===t&&e.splice(a,1)}},{key:\"subtract\",value:function(t,a){return e.removeIf(t,(function(t){return e.hasValue(a,t)}))}}]),e}();Q.hasValue=function(e,t){var a,l=Object(L.a)(e);try{for(l.s();!(a=l.n()).done;){if(a.value===t)return!0}}catch(n){l.e(n)}finally{l.f()}return!1};var J=function(){function e(){Object(_.a)(this,e)}return Object(g.a)(e,null,[{key:\"getInformalVersion\",value:function(){return\"1.0 Beta 1\"}},{key:\"getTechnicalVersion\",value:function(){return\"1.0.0.1\"}}]),e}();console.log(\"Blueprint3D \".concat(J.getInformalVersion(),\" (\").concat(J.getTechnicalVersion(),\")\"));var q=\"bp3dEvent.config_changed\",Z=\"bp3dEvent.linked_item_changed\",$=\"bp3dEvent.highlight_changed\",ee=Object(f.a)(Object(f.a)(Object(f.a)(Object(f.a)(Object(f.a)(Object(f.a)({},n),l),i),s),o),m),te=0,ae=1,le=2,ne=\"#f1f1f1\",ie=\"#008cba\",se=\"#008cba\",oe=\"#ff0000\",me=\"#00ff00\",de=\"#000\",be=function(){function e(t,a,l){var n=this;Object(_.a)(this,e),this.handleWindowResize=function(){var e=n.canvas,t=e.parentNode;e.height=t.clientHeight,e.width=t.clientWidth,n.canvasElement.height=t.clientHeight,n.canvasElement.width=t.clientWidth,n.draw()},this.draw=function(){n.context.clearRect(0,0,n.canvasElement.width,n.canvasElement.height),n.drawGrid(),n.floorplan.getRooms().forEach((function(e){n.drawRoom(e)})),n.floorplan.getWalls().forEach((function(e){n.drawWall(e)})),n.floorplan.getCorners().forEach((function(e){n.drawCorner(e)})),n.floorplan.getItems().forEach((function(e){n.drawItem(e),n.drawItemLabel({x:e.position.x,y:e.position.z},e.metadata.name)})),n.viewmodel.mode===ae&&n.drawTarget(n.viewmodel.targetX,n.viewmodel.targetY,n.viewmodel.lastNode),n.floorplan.getWalls().forEach((function(e){n.drawWallLabels(e)})),function(){if(ee.Configuration.getBooleanValue(ee.configDimensionVisible)){var e=1/0,t=1/0;n.floorplan.getCorners().forEach((function(a){a.getX()<e&&(e=a.getX()),a.getY()<t&&(t=a.getY())})),e=n.viewmodel.convertX(e)-50,t=n.viewmodel.convertY(t)-50;var a=n.floorplan.calculateRulerData();a.x.forEach((function(e){n.drawRuler(e.start,e.end,e.length,\"x\",t)})),a.y.forEach((function(t){n.drawRuler(t.start,t.end,t.length,\"y\",e)}))}}()},this.floorplan=t,this.viewmodel=a,this.canvas=l,this.canvasElement=l,this.context=this.canvasElement.getContext(\"2d\");var i=this;window.addEventListener(\"resize\",(function(){i.handleWindowResize()})),this.handleWindowResize(),document.addEventListener(ee.BP3D_EVENT_CONFIG_CHANGED,(function(e){var t=e.detail;t&&t.hasOwnProperty(ee.configDimensionVisible)&&n.draw()}))}return Object(g.a)(e,[{key:\"drawRuler\",value:function(e,t,a,l,n){var i=this;if(!(a<.01)){e={x:this.viewmodel.convertX(e.x),y:this.viewmodel.convertY(e.y)},t={x:this.viewmodel.convertX(t.x),y:this.viewmodel.convertY(t.y)};var s=Object(f.a)({},e),o=Object(f.a)({},t);\"x\"===l?(s.y=n,o.y=n):\"y\"===l&&(s.x=n,o.x=n),[{p:[s,o],dashed:!1},{p:[s,e],dashed:!0},{p:[t,o],dashed:!0}].forEach((function(e){var t=\"x\"===l?\"#f00\":\"#00f\";i.drawLine(e.p[0].x,e.p[0].y,e.p[1].x,e.p[1].y,1,t,e.dashed)})),function(){var e=15,t=\"x\"===l?\"#f00\":\"#00f\",a=[];a.push(s),a.push({x:\"x\"===l?s.x+e:s.x-3.75,y:\"x\"===l?s.y-3.75:s.y+e}),a.push({x:\"x\"===l?s.x+e:s.x+3.75,y:\"x\"===l?s.y+3.75:s.y+e});var n=[];n.push(o),n.push({x:\"x\"===l?o.x-e:o.x-3.75,y:\"x\"===l?o.y-3.75:o.y-e}),n.push({x:\"x\"===l?o.x-e:o.x+3.75,y:\"x\"===l?o.y+3.75:o.y-e}),[a,n].forEach((function(e){var a=e.map((function(e){return e.x})),l=e.map((function(e){return e.y}));i.drawPolygon(a,l,!0,t,!0,t,1)}))}(),this.drawItemLabel({x:(s.x+o.x)/2,y:(s.y+o.y)/2},ee.Dimensioning.cmToMeasure(100*a),20,!1,\"y\"===l?-Math.PI/2:0)}}},{key:\"drawItem\",value:function(e){var t=this;e.getSnapPoints().forEach((function(a){!function(a){var l=[],n=[];a.forEach((function(e){l.push(t.viewmodel.convertX(e.x)),n.push(t.viewmodel.convertY(e.y))})),t.drawPolygon(l,n,!0,e===t.viewmodel.activeItem?\"#0000ff22\":\"#33333311\",!0,\"#444\",1)}(a)}))}},{key:\"drawItemLabel\",value:function(e,t){var a=arguments.length>2&&void 0!==arguments[2]?arguments[2]:12,l=!(arguments.length>3&&void 0!==arguments[3])||arguments[3],n=arguments.length>4&&void 0!==arguments[4]?arguments[4]:0;this.context.font=\"normal \".concat(a,\"px Arial\"),this.context.fillStyle=de,this.context.textBaseline=\"middle\",this.context.textAlign=\"center\",this.context.strokeStyle=\"#ffffff\",this.context.lineWidth=4;var i=l?this.viewmodel.convertX(e.x):e.x,s=l?this.viewmodel.convertY(e.y):e.y;n?(this.context.save(),this.context.translate(i,s),this.context.rotate(n),this.context.fillText(t,0,0),this.context.restore()):this.context.fillText(t,i,s)}},{key:\"drawWallLabels\",value:function(e){var t=e.start.x,a=e.start.y,l=e.end.x,n=e.end.y,i={x:(t+l)/2,y:(a+n)/2},s=Math.sqrt(Math.pow(t-l,2)+Math.pow(a-n,2));this.drawEdgeLabel(i,s)}},{key:\"drawWall\",value:function(e){var t=this,a=e===this.viewmodel.activeWall&&!this.viewmodel.activeCorner;a&&this.viewmodel.mode,e.frontEdge&&this.drawEdge(e.frontEdge,a),e.backEdge&&this.drawEdge(e.backEdge,a),Array.isArray(e.items)&&e.items.forEach((function(a){return t.drawWallItem(a,e)}))}},{key:\"drawWallItem\",value:function(e,t){var a=this,l=e.getCorners(),n=[],i=[];l.forEach((function(e){n.push(a.viewmodel.convertX(e.x)),i.push(a.viewmodel.convertY(e.y))})),this.drawPolygon(n,i,!0,\"#fff\",!0,\"#888\",1)}},{key:\"drawEdgeLabel\",value:function(e,t){(t*=100)<60||(this.context.font=\"normal 12px Arial\",this.context.fillStyle=\"#000000\",this.context.textBaseline=\"middle\",this.context.textAlign=\"center\",this.context.strokeStyle=\"#ffffff\",this.context.lineWidth=4,this.context.strokeText(ee.Dimensioning.cmToMeasure(t),this.viewmodel.convertX(e.x),this.viewmodel.convertY(e.y)),this.context.fillText(ee.Dimensioning.cmToMeasure(t),this.viewmodel.convertX(e.x),this.viewmodel.convertY(e.y)))}},{key:\"drawEdge\",value:function(e,t){var a=\"#888888\";t&&this.viewmodel.mode===le?a=oe:t&&(a=se);var l=e.corners(),n=this;this.drawPolygon(ee.Utils.map(l,(function(e){return n.viewmodel.convertX(e.x)})),ee.Utils.map(l,(function(e){return n.viewmodel.convertY(e.y)})),!0,t?se:\"#888\",!0,a,1)}},{key:\"drawRoom\",value:function(e){var t=this;this.drawPolygon(ee.Utils.map(e.corners,(function(e){return t.viewmodel.convertX(e.x)})),ee.Utils.map(e.corners,(function(e){return t.viewmodel.convertY(e.y)})),!0,\"#f9f9f9\")}},{key:\"drawCorner\",value:function(e){var t=e===this.viewmodel.activeCorner,a=\"#cccccc\";t&&this.viewmodel.mode===le?a=oe:t&&(a=me),this.drawCircle(this.viewmodel.convertX(e.x),this.viewmodel.convertY(e.y),t?7:0,a)}},{key:\"drawTarget\",value:function(e,t,a){this.drawCircle(this.viewmodel.convertX(e),this.viewmodel.convertY(t),7,me),this.viewmodel.lastNode&&this.drawLine(this.viewmodel.convertX(a.x),this.viewmodel.convertY(a.y),this.viewmodel.convertX(e),this.viewmodel.convertY(t),7,ie)}},{key:\"drawLine\",value:function(e,t,a,l){var n=arguments.length>4&&void 0!==arguments[4]?arguments[4]:1,i=arguments.length>5&&void 0!==arguments[5]?arguments[5]:\"#000\",s=arguments.length>6&&void 0!==arguments[6]&&arguments[6];this.context.beginPath(),this.context.setLineDash([]),s&&this.context.setLineDash([3,6]),this.context.moveTo(e,t),this.context.lineTo(a,l),this.context.lineWidth=n,this.context.strokeStyle=i,this.context.stroke()}},{key:\"drawPolygon\",value:function(e,t,a,l,n,i,s){a=a||!1,n=n||!1,this.context.beginPath(),this.context.moveTo(e[0],t[0]);for(var o=1;o<e.length;o++)this.context.lineTo(e[o],t[o]);this.context.closePath(),a&&(this.context.fillStyle=l,this.context.fill()),n&&(this.context.lineWidth=s,this.context.strokeStyle=i,this.context.stroke())}},{key:\"drawCircle\",value:function(e,t,a,l){this.context.beginPath(),this.context.arc(e,t,a,0,2*Math.PI,!1),this.context.fillStyle=l,this.context.fill()}},{key:\"calculateGridSpacing\",value:function(){var e=100,t=this.viewmodel.pixelsPerCm;return t<.5?e=100:t<1?e=50:t<2?e=25:t<4&&(e=12.5),(t||.5)*e}},{key:\"calculateGridOffset\",value:function(e){var t=this.calculateGridSpacing();return e>=0?(e+t/2)%t-t/2:(e-t/2)%t+t/2}},{key:\"drawGrid\",value:function(){for(var e=this.calculateGridOffset(-this.viewmodel.originX),t=this.calculateGridOffset(-this.viewmodel.originY),a=this.canvasElement.width,l=this.canvasElement.height,n=this.calculateGridSpacing(),i=0;i<=a/n;i++)this.drawLine(n*i+e,0,n*i+e,l,1,ne);for(var s=0;s<=l/n;s++)this.drawLine(0,n*s+t,a,n*s+t,1,ne)}}]),e}(),re=function(e){Object(x.a)(a,e);var t=Object(D.a)(a);function a(){return Object(_.a)(this,a),t.apply(this,arguments)}return Object(g.a)(a,[{key:\"render\",value:function(){var e=this,t=this.props.hidden;return Object(v.jsxs)(\"div\",{style:{width:\"100%\",height:\"100%\",display:\"block\",position:\"absolute\",top:0,left:0,opacity:t?0:100,pointerEvents:t?\"none\":\"inherit\"},children:[Object(v.jsx)(\"canvas\",{className:\"canvas-floor-plan\",ref:function(t){return\"function\"===typeof e.props.onDomLoaded&&e.props.onDomLoaded(t)},children:\"Floor plan viewer\"}),Object(v.jsxs)(\"div\",{className:\"floorplan-modes-container\",children:[Object(v.jsx)(\"span\",{onClick:function(){return e.props.onModeChanged(te)},children:\"Move\"}),Object(v.jsx)(\"span\",{onClick:function(){return e.props.onModeChanged(ae)},children:\"Draw\"}),Object(v.jsx)(\"span\",{onClick:function(){return e.props.onModeChanged(le)},children:\"Delete\"})]})]})}}]),a}(r.a.Component),pe=function(e){Object(x.a)(a,e);var t=Object(D.a)(a);function a(){return Object(_.a)(this,a),t.apply(this,arguments)}return Object(g.a)(a,[{key:\"render\",value:function(){var e=this;return Object(v.jsxs)(\"div\",{className:\"controls-section\",children:[Object(v.jsx)(\"span\",{className:\"control-button\",onClick:function(){return\"function\"===typeof e.props.onPan&&e.props.onPan(\"LEFT\")},children:Object(v.jsx)(\"i\",{className:\"fa fa-arrow-left\"})}),Object(v.jsxs)(\"span\",{style:{display:\"inline-block\",position:\"relative\",verticalAlign:\"middle\"},children:[Object(v.jsx)(\"span\",{className:\"control-button\",style:{display:\"block\",float:\"none\"},onClick:function(){return\"function\"===typeof e.props.onPan&&e.props.onPan(\"UP\")},children:Object(v.jsx)(\"i\",{className:\"fa fa-arrow-up\"})}),Object(v.jsx)(\"br\",{}),Object(v.jsx)(\"span\",{className:\"control-button\",style:{display:\"block\",float:\"none\"},onClick:function(){return\"function\"===typeof e.props.onPan&&e.props.onPan(\"DOWN\")},children:Object(v.jsx)(\"i\",{className:\"fa fa-arrow-down\"})})]}),Object(v.jsx)(\"span\",{className:\"control-button\",onClick:function(){return\"function\"===typeof e.props.onPan&&e.props.onPan(\"RIGHT\")},children:Object(v.jsx)(\"i\",{className:\"fa fa-arrow-right\"})}),Object(v.jsx)(\"span\",{className:\"control-button\",onClick:function(){\"function\"===typeof e.props.onZoomOut&&e.props.onZoomOut()},children:Object(v.jsx)(\"i\",{className:\"fa fa-search-minus\"})}),Object(v.jsx)(\"span\",{className:\"control-button\",onClick:function(){\"function\"===typeof e.props.onHomeClicked&&e.props.onHomeClicked()},children:Object(v.jsx)(\"i\",{className:\"fa fa-home\"})}),Object(v.jsx)(\"span\",{className:\"control-button\",onClick:function(){\"function\"===typeof e.props.onZoomIn&&e.props.onZoomIn()},children:Object(v.jsx)(\"i\",{className:\"fa fa-search-plus\"})})]})}}]),a}(r.a.Component),ce=a(0),he=a(13),ye={url:\"\".concat(ee.Configuration.getStringValue(\"defaultPathPrefix\"),\"/rooms/textures/blank.png\"),stretch:!0,scale:0},ue=function(){function e(t,a){var l=this;Object(_.a)(this,e),this.frontEdge=null,this.backEdge=null,this.orphan=!1,this.locked=!1,this.items=[],this.onItems=[],this.frontTexture=ye,this.backTexture=ye,this.thickness=ee.Configuration.getNumericValue(ee.configWallThickness),this.height=ee.Configuration.getNumericValue(ee.configWallHeight),this.moved_callbacks=[],this.deleted_callbacks=[],this.action_callbacks=[],this.handleStartMoved=function(e,t,a,n){var i={prev:{start:{x:a,y:n},end:{x:l.getEndX(),y:l.getEndY()}},current:{start:{x:e,y:t},end:{x:l.getEndX(),y:l.getEndY()}}};l.moveWallItems(i)},this.handleEndMoved=function(e,t,a,n){var i={prev:{start:{x:l.getStartX(),y:l.getStartY()},end:{x:a,y:n}},current:{start:{x:l.getStartX(),y:l.getStartY()},end:{x:e,y:t}}};l.moveWallItems(i)},this.start=t,this.end=a,this.id=this.getUuid(),this.start.attachStart(this),this.end.attachEnd(this),this.start.moved_callbacks.push(this.handleStartMoved),this.end.moved_callbacks.push(this.handleEndMoved)}return Object(g.a)(e,[{key:\"getUuid\",value:function(){return[this.start.id,this.end.id].join()}},{key:\"resetFrontBack\",value:function(){this.frontEdge=null,this.backEdge=null,this.orphan=!1}},{key:\"snapToAxis\",value:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:.25;this.start.snapToAxis(e),this.end.snapToAxis(e)}},{key:\"fireOnMove\",value:function(e){this.moved_callbacks.push(e)}},{key:\"fireOnDelete\",value:function(e){this.deleted_callbacks.push(e)}},{key:\"dontFireOnDelete\",value:function(e){var t=this.deleted_callbacks.indexOf(e);this.deleted_callbacks.splice(t,1)}},{key:\"fireOnAction\",value:function(e){this.action_callbacks.push(e)}},{key:\"fireAction\",value:function(e){this.action_callbacks.forEach((function(t){return\"function\"===typeof t&&t(e)}))}},{key:\"relativeMove\",value:function(e,t){if(!(this.locked||this.start.locked||this.end.locked)){this.start.move(this.getStartX()+e,this.getStartY()+t,!1),this.end.move(this.getEndX()+e,this.getEndY()+t,!1);var a={prev:{start:{x:this.getStartX(),y:this.getStartY()},end:{x:this.getEndX(),y:this.getEndY()}}};this.snapToAxis(),a.current={start:{x:this.getStartX(),y:this.getStartY()},end:{x:this.getEndX(),y:this.getEndY()}},this.moveWallItems(a)}}},{key:\"moveWallItems\",value:function(e){var t=e.prev,a=e.current;this.items.length&&this.items.forEach((function(e){var l=e.position,n=Math.sqrt(Math.pow(t.start.x-t.end.x,2)+Math.pow(t.start.y-t.end.y,2)),i=Math.sqrt(Math.pow(t.start.x-l.x,2)+Math.pow(t.start.y-l.z,2))/n,s=a.start.x+(a.end.x-a.start.x)*i,o=(l.y,a.start.y+(a.end.y-a.start.y)*i),m=s-l.x,d=o-l.z;e.relativeMove(m,d);var b=new ce.Lb(t.end.x-t.start.x,0,t.end.y-t.start.y),r=new ce.Lb(a.end.x-a.start.x,0,a.end.y-a.start.y),p=(new ce.Lb).copy(b).cross(r),c=b.angleTo(r);p.y<0&&(c=-c);var h=e.rotation.y;h+=c,e.rotation.y=h,e.dimensionHelper.rotation.y=h}))}},{key:\"fireMoved\",value:function(){this.moved_callbacks.forEach((function(e){return\"function\"===typeof e&&e()}))}},{key:\"fireRedraw\",value:function(){this.frontEdge&&this.frontEdge.redrawCallbacks.forEach((function(e){return\"function\"===typeof e&&e()})),this.backEdge&&this.backEdge.redrawCallbacks.forEach((function(e){return\"function\"===typeof e&&e()}))}},{key:\"getStart\",value:function(){return this.start}},{key:\"getEnd\",value:function(){return this.end}},{key:\"getStartX\",value:function(){return this.start.getX()}},{key:\"getEndX\",value:function(){return this.end.getX()}},{key:\"getStartY\",value:function(){return this.start.getY()}},{key:\"getEndY\",value:function(){return this.end.getY()}},{key:\"remove\",value:function(){var e=this;this.start.detachWall(this),this.end.detachWall(this),this.deleted_callbacks.forEach((function(t){return\"function\"===typeof t&&t(e)}))}},{key:\"setStart\",value:function(e){this.start.detachWall(this),e.attachStart(this),this.start=e,this.fireMoved()}},{key:\"setEnd\",value:function(e){this.end.detachWall(this),e.attachEnd(this),this.end=e,this.fireMoved()}},{key:\"distanceFrom\",value:function(e,t){return ee.Utils.pointDistanceFromLine(e,t,this.getStartX(),this.getStartY(),this.getEndX(),this.getEndY())}},{key:\"oppositeCorner\",value:function(e){return this.start===e?this.end:this.end===e?this.start:void console.log(\"Wall does not connect to corner\")}},{key:\"setLocked\",value:function(e){this.locked=e,this.start.setLocked(e),this.end.setLocked(e)}},{key:\"getWallCenter\",value:function(){var e=this.start.x,t=this.start.y;return{x:(e+this.end.x)/2,y:(t+this.end.y)/2}}},{key:\"getWallLength\",value:function(){var e=this.start.x,t=this.start.y,a=this.end.x,l=this.end.y;return Math.sqrt(Math.pow(e-a,2)+Math.pow(t-l,2))}},{key:\"setWallLength\",value:function(e){if(e>0){var t=e/this.getWallLength(),a={x:0,y:0};if(this.start.locked||this.end.locked)if(this.start.locked&&!this.end.locked)a={x:this.getStartX(),y:this.getStartY()};else{if(this.start.locked||!this.end.locked)return;a={x:this.getEndX(),y:this.getEndY()}}else a=this.getWallCenter();var l=0,n=0;l=a.x+(this.start.x-a.x)*t,n=a.y+(this.start.y-a.y)*t,this.start.move(l,n,!1),l=a.x+(this.end.x-a.x)*t,n=a.y+(this.end.y-a.y)*t,this.end.move(l,n,!1)}}}]),e}(),_e=function(){function e(t,a,l,n){Object(_.a)(this,e),this.wallStarts=[],this.wallEnds=[],this.moved_callbacks=[],this.deleted_callbacks=[],this.action_callbacks=[],this.locked=!1,this.floorplan=t,this.x=a,this.y=l,this.id=n||ee.Utils.guid()}return Object(g.a)(e,[{key:\"fireOnMove\",value:function(e){this.moved_callbacks.push(e)}},{key:\"fireOnDelete\",value:function(e){this.deleted_callbacks.push(e)}},{key:\"fireOnAction\",value:function(e){this.action_callbacks.push(e)}},{key:\"getX\",value:function(){return this.x}},{key:\"getY\",value:function(){return this.y}},{key:\"snapToAxis\",value:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:.25,t={x:!1,y:!1},a=this;return this.adjacentCorners().forEach((function(l){Math.abs(l.x-a.x)<e&&(a.x=l.x,t.x=!0),Math.abs(l.y-a.y)<e&&(a.y=l.y,t.y=!0)})),t}},{key:\"relativeMove\",value:function(e,t){this.locked||this.move(this.x+e,this.y+t)}},{key:\"fireAction\",value:function(e){this.action_callbacks.forEach((function(t){return\"function\"===typeof t&&t(e)}))}},{key:\"remove\",value:function(){var e=this;this.deleted_callbacks.forEach((function(t){return\"function\"===typeof t&&t(e)}))}},{key:\"removeAll\",value:function(){for(var e=0;e<this.wallStarts.length;e++)this.wallStarts[e].remove();for(e=0;e<this.wallEnds.length;e++)this.wallEnds[e].remove();this.remove()}},{key:\"move\",value:function(e,t){var a=this,l=!(arguments.length>2&&void 0!==arguments[2])||arguments[2];if(!this.locked){var n=this.x,i=this.y;this.x=e,this.y=t,this.mergeWithIntersected(),l&&this.snapToAxis(),this.moved_callbacks.forEach((function(e){return\"function\"===typeof e&&e(a.x,a.y,n,i)})),this.wallStarts.forEach((function(e){e.fireMoved()})),this.wallEnds.forEach((function(e){e.fireMoved()}))}}},{key:\"adjacentCorners\",value:function(){for(var e=[],t=0;t<this.wallStarts.length;t++)e.push(this.wallStarts[t].getEnd());for(t=0;t<this.wallEnds.length;t++)e.push(this.wallEnds[t].getStart());return e}},{key:\"isWallConnected\",value:function(e){for(var t=0;t<this.wallStarts.length;t++)if(this.wallStarts[t]===e)return!0;for(t=0;t<this.wallEnds.length;t++)if(this.wallEnds[t]===e)return!0;return!1}},{key:\"distanceFrom\",value:function(e,t){return ee.Utils.distance(e,t,this.x,this.y)}},{key:\"distanceFromWall\",value:function(e){return e.distanceFrom(this.x,this.y)}},{key:\"distanceFromCorner\",value:function(e){return this.distanceFrom(e.x,e.y)}},{key:\"detachWall\",value:function(e){ee.Utils.removeValue(this.wallStarts,e),ee.Utils.removeValue(this.wallEnds,e),0===this.wallStarts.length&&0===this.wallEnds.length&&this.remove()}},{key:\"attachStart\",value:function(e){this.wallStarts.push(e)}},{key:\"attachEnd\",value:function(e){this.wallEnds.push(e)}},{key:\"wallTo\",value:function(e){for(var t=0;t<this.wallStarts.length;t++)if(this.wallStarts[t].getEnd()===e)return this.wallStarts[t];return null}},{key:\"wallFrom\",value:function(e){for(var t=0;t<this.wallEnds.length;t++)if(this.wallEnds[t].getStart()===e)return this.wallEnds[t];return null}},{key:\"wallToOrFrom\",value:function(e){return this.wallTo(e)||this.wallFrom(e)}},{key:\"combineWithCorner\",value:function(e){this.x=e.x,this.y=e.y;for(var t=e.wallStarts.length-1;t>=0;t--)e.wallStarts[t].setStart(this);for(t=e.wallEnds.length-1;t>=0;t--)e.wallEnds[t].setEnd(this);e.removeAll(),this.removeDuplicateWalls(),this.floorplan.update()}},{key:\"mergeWithIntersected\",value:function(){for(var e=0;e<this.floorplan.getCorners().length;e++){var t=this.floorplan.getCorners()[e];if(this.distanceFromCorner(t)<.2&&t!==this)return this.combineWithCorner(t),!0}for(e=0;e<this.floorplan.getWalls().length;e++){var a=this.floorplan.getWalls()[e];if(this.distanceFromWall(a)<.2&&!this.isWallConnected(a)){var l=ee.Utils.closestPointOnLine(this.x,this.y,a.getStart().x,a.getStart().y,a.getEnd().x,a.getEnd().y);return this.x=l.x,this.y=l.y,this.floorplan.newWall(this,a.getEnd()),a.setEnd(this),this.floorplan.update(),!0}}return!1}},{key:\"removeDuplicateWalls\",value:function(){for(var e={},t={},a=this.wallStarts.length-1;a>=0;a--)this.wallStarts[a].getEnd()===this||this.wallStarts[a].getEnd().id in e?this.wallStarts[a].remove():e[this.wallStarts[a].getEnd().id]=!0;for(a=this.wallEnds.length-1;a>=0;a--)this.wallEnds[a].getStart()===this||this.wallEnds[a].getStart().id in t?this.wallEnds[a].r\n\n... [1 lines truncated] ...",
+      "stderr": "",
+      "interrupted": false,
+      "isImage": false
+    },
+    "tool_use_id": "toolu_01Gx1LSkNfwfSipYyU1okcMU",
+    "a1xai_timestamp": "2025-12-07T15:26:40.072718",
+    "a1xai_hook_version": "7.0_optimized",
+    "a1xai_framework": "SuperClaude",
+    "a1xai_analysis": {
+      "tool_type": "Bash",
+      "success": false,
+      "execution_time": 0,
+      "timestamp": "2025-12-07T15:26:40.070790"
+    }
+  }
+]
