@@ -51,6 +51,12 @@ body {
   margin-right: 0;
 }
 
+.scenes-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
 .right-container {
   width: 0;
   background: white;
