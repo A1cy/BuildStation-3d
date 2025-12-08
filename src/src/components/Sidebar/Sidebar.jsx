@@ -113,7 +113,7 @@ class Sidebar extends Component {
       // Scene Lock
       {
         toggled: locked,
-        font: locked ? 'fas fa-unlock' : 'fas fa-lock',
+        font: locked ? 'fa fa-unlock' : 'fa fa-lock',
         tooltip: locked ? 'Unlock Scene' : 'Lock Scene',
         callback: this.handleToggleLock
       },
@@ -129,7 +129,7 @@ class Sidebar extends Component {
       // Snap Toggle
       {
         toggled: snap,
-        font: 'fas fa-magnet',
+        font: 'fa fa-magnet',
         tooltip: 'Snap Objects',
         callback: this.handleToggleSnap
       },
@@ -137,7 +137,7 @@ class Sidebar extends Component {
       // X-Ray Toggle
       {
         toggled: xRay,
-        font: 'far fa-square',
+        font: 'fa fa-square',
         tooltip: 'X-Ray Wall',
         callback: this.handleToggleXRay
       },
@@ -147,7 +147,7 @@ class Sidebar extends Component {
 
       // Add Product
       {
-        font: 'fas fa-cart-plus',
+        font: 'fa fa-cart-plus',
         tooltip: 'Add Product',
         callback: this.props.onAddProductClicked
       },
@@ -164,14 +164,14 @@ class Sidebar extends Component {
 
       // Load
       {
-        font: 'fas fa-upload',
+        font: 'fa fa-upload',
         tooltip: 'Load',
         callback: this.props.onLoadClicked
       },
 
       // Screenshot
       {
-        font: 'far fa-image',
+        font: 'fa fa-image',
         tooltip: 'Screenshot',
         callback: this.props.onSnapshotClicked
       },
