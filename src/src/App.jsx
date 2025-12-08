@@ -177,26 +177,6 @@ class App extends Component {
 
             {/* Main Content - 2D/3D Scene + Product List */}
             <div className={`main-container ${selectedItem ? '' : 'wide'}`}>
-              {/* Temporary Toggle Button for Testing */}
-              <button
-                onClick={() => this.setState({ showProducts: !showProducts })}
-                style={{
-                  position: 'absolute',
-                  top: 20,
-                  left: 20,
-                  zIndex: 1000,
-                  padding: '10px 20px',
-                  background: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '16px'
-                }}
-              >
-                {showProducts ? 'Hide Products' : 'Show Products'}
-              </button>
-
               {/* Blueprint3D Scene Container */}
               <div className="scenes-container">
                 <Blueprint3D
