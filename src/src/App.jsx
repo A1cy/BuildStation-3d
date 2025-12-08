@@ -199,14 +199,14 @@ class App extends Component {
 
               {/* Blueprint3D Scene Container */}
               <div className="scenes-container">
-                {/* <Blueprint3D
+                <Blueprint3D
                   ref={(ref) => (this.refBp3d = ref)}
                   viewMode={viewMode}
                   measureUnit={this.state.measureUnit}
                   onItemSelected={this.handleItemSelected}
                   onItemUnselected={this.handleItemUnselected}
                   onSwitchMode={this.handleSwitchMode}
-                /> */}
+                />
               </div>
 
               {/* Product List Panel (slides in from left) */}
