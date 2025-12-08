@@ -61,6 +61,6 @@
 }
 
 /* Text label (for unit button) */
-.left-toolbar .left-toolbar-button span:empty::before {
+.left-toolbar .left-toolbar-button span[data-label]:empty::before {
   content: attr(data-label);
 }
