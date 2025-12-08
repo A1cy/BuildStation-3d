@@ -90,32 +90,32 @@ const PRODUCT_CATALOG = [
     category: 'Office',
     styles: [
       {
-        name: 'Desk',
-        image: '/Blueprint3D-assets/furniture/desk/thumbnails/desk.jpg',
-        model: '/Blueprint3D-assets/furniture/desk/desk.glb',
+        name: 'Executive Desk',
+        image: PLACEHOLDER_IMG,
+        model: '/Blueprint3D-assets/furniture/desk/DESK-BF.glb',
         type: 'furniture',
         subtype: 'desk'
       },
       {
-        name: 'Office Chair',
-        image: '/Blueprint3D-assets/furniture/desk/thumbnails/chair.jpg',
-        model: '/Blueprint3D-assets/furniture/desk/chair.glb',
+        name: 'Corner Desk Left',
+        image: PLACEHOLDER_IMG,
+        model: '/Blueprint3D-assets/furniture/desk/DESK-ECUL24C24E.glb',
+        type: 'furniture',
+        subtype: 'desk'
+      },
+      {
+        name: 'File Cabinet Mobile',
+        image: PLACEHOLDER_IMG,
+        model: '/Blueprint3D-assets/furniture/desk/DESK-FMB.glb',
+        type: 'furniture',
+        subtype: 'storage'
+      },
+      {
+        name: 'Rolling Chair Left',
+        image: PLACEHOLDER_IMG,
+        model: '/Blueprint3D-assets/furniture/desk/DESK-RCL.glb',
         type: 'furniture',
         subtype: 'chair'
-      },
-      {
-        name: 'Bookshelf',
-        image: '/Blueprint3D-assets/furniture/desk/thumbnails/bookshelf.jpg',
-        model: '/Blueprint3D-assets/furniture/desk/bookshelf.glb',
-        type: 'furniture',
-        subtype: 'storage'
-      },
-      {
-        name: 'File Cabinet',
-        image: '/Blueprint3D-assets/furniture/desk/thumbnails/file-cabinet.jpg',
-        model: '/Blueprint3D-assets/furniture/desk/file-cabinet.glb',
-        type: 'furniture',
-        subtype: 'storage'
       }
     ]
   }
