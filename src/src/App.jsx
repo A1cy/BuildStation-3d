@@ -279,24 +279,27 @@ class App extends Component {
                 /> */}
 
                 {/* Material and Style Configuration */}
-                {/* <PropertyPanel
+                <PropertyPanel
                   info={selectedItem}
                   onMaterialChange={(materialName, materialType) => {
-                    if (this.refBp3d && typeof this.refBp3d.updateMaterial === 'function') {
-                      this.refBp3d.updateMaterial(materialName, materialType);
-                    }
+                    console.log('Material changed:', materialName, materialType);
+                    // TODO: Wire to Blueprint3D when integrated
+                    // if (this.refBp3d && typeof this.refBp3d.updateMaterial === 'function') {
+                    //   this.refBp3d.updateMaterial(materialName, materialType);
+                    // }
                   }}
                   onStyleChange={(styleName, styleType) => {
-                    if (this.refBp3d && typeof this.refBp3d.updateStyle === 'function') {
-                      this.refBp3d.updateStyle(styleName, styleType);
-                    }
+                    console.log('Style changed:', styleName, styleType);
+                    // TODO: Wire to Blueprint3D when integrated
+                    // if (this.refBp3d && typeof this.refBp3d.updateStyle === 'function') {
+                    //   this.refBp3d.updateStyle(styleName, styleType);
+                    // }
                   }}
                   onBlockCountChanged={(count) => {
-                    if (this.refBp3d && typeof this.refBp3d.updateBlockCount === 'function') {
-                      this.refBp3d.updateBlockCount(count);
-                    }
+                    console.log('Block count changed:', count);
+                    // TODO: Wire to Blueprint3D when integrated
                   }}
-                /> */}
+                />
               </div>
 
               {/* Product Action Controls */}

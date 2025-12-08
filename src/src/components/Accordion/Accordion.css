@@ -1,0 +1,27 @@
+/* Accordion Component Styles */
+
+.custom-accordion {
+  display: inherit;
+  margin-bottom: 5px;
+}
+
+.custom-accordion .title {
+  color: #666;
+  background: #eee;
+  border: 1px solid #ddd;
+  padding: 8px 10px;
+  margin: -1px 0;
+  cursor: pointer;
+  transition: 0.3s;
+  user-select: none;
+  font-weight: 500;
+}
+
+.custom-accordion .title:hover {
+  background: #bbb;
+  color: #333;
+}
+
+.custom-accordion .title:active {
+  background: #999;
+}
