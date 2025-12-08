@@ -186,16 +186,16 @@ class Blueprint3D extends Component {
 
     // Create camera
     this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
-    this.camera.position.set(500, 400, 500);
-    this.camera.lookAt(0, 0, 0);
+    this.camera.position.set(12, 10, 12);
+    this.camera.lookAt(0, 1, 0);
 
     // Add OrbitControls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.05;
     this.controls.screenSpacePanning = false;
-    this.controls.minDistance = 100;
-    this.controls.maxDistance = 2000;
+    this.controls.minDistance = 5;
+    this.controls.maxDistance = 50;
     this.controls.maxPolarAngle = Math.PI / 2; // Don't go below ground
 
     // Create enhanced lighting

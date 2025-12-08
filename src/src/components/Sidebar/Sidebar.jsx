@@ -97,12 +97,12 @@ class Sidebar extends Component {
       // View Mode Toggle (2D/3D)
       viewMode === '3d'
         ? {
-            font: 'fa fa-border-all',
+            font: 'fa-solid fa-border-all',
             tooltip: 'Show 2D Floor Planner',
             callback: this.props.onShow2DPlanner
           }
         : {
-            font: 'fa fa-cube',
+            font: 'fa-solid fa-cube',
             tooltip: 'Show 3D View',
             callback: this.props.onShow3DViewClicked
           },
@@ -113,7 +113,7 @@ class Sidebar extends Component {
       // Scene Lock
       {
         toggled: locked,
-        font: locked ? 'fa fa-unlock' : 'fa fa-lock',
+        font: locked ? 'fa-solid fa-unlock' : 'fa-solid fa-lock',
         tooltip: locked ? 'Unlock Scene' : 'Lock Scene',
         callback: this.handleToggleLock
       },
@@ -121,7 +121,7 @@ class Sidebar extends Component {
       // Dimensions Toggle
       {
         toggled: showDimension,
-        font: 'fa fa-ruler-combined',
+        font: 'fa-solid fa-ruler-combined',
         tooltip: `${showDimension ? 'Hide' : 'Show'} Dimensions`,
         callback: this.handleToggleDimensions
       },
@@ -129,7 +129,7 @@ class Sidebar extends Component {
       // Snap Toggle
       {
         toggled: snap,
-        font: 'fa fa-magnet',
+        font: 'fa-solid fa-magnet',
         tooltip: 'Snap Objects',
         callback: this.handleToggleSnap
       },
@@ -137,7 +137,7 @@ class Sidebar extends Component {
       // X-Ray Toggle
       {
         toggled: xRay,
-        font: 'fa fa-square',
+        font: 'fa-solid fa-square',
         tooltip: 'X-Ray Wall',
         callback: this.handleToggleXRay
       },
@@ -147,7 +147,7 @@ class Sidebar extends Component {
 
       // Add Product
       {
-        font: 'fa fa-cart-plus',
+        font: 'fa-solid fa-cart-plus',
         tooltip: 'Add Product',
         callback: this.props.onAddProductClicked
       },
@@ -157,21 +157,21 @@ class Sidebar extends Component {
 
       // Save
       {
-        font: 'fa fa-save',
+        font: 'fa-solid fa-save',
         tooltip: 'Save',
         callback: this.props.onSaveClicked
       },
 
       // Load
       {
-        font: 'fa fa-upload',
+        font: 'fa-solid fa-upload',
         tooltip: 'Load',
         callback: this.props.onLoadClicked
       },
 
       // Screenshot
       {
-        font: 'fa fa-image',
+        font: 'fa-solid fa-image',
         tooltip: 'Screenshot',
         callback: this.props.onSnapshotClicked
       },
