@@ -11,8 +11,6 @@ import Sidebar from './components/Sidebar';
 import Blueprint3D from './components/Blueprint3D';
 import ProductList from './components/ProductList';
 import PropertyPanel from './components/PropertyPanel';
-import ProductControls from './components/ProductControls';
-import ImportModal from './components/ImportModal';
 
 // Data imports
 import PRODUCT_CATALOG from './data/productCatalog';
