@@ -709,8 +709,11 @@ class FloorPlan {
 
     const uniqueCycles = removeDuplicates(cycles);
 
+    // Filter out empty cycles before checking clockwise orientation
+    const validCycles = uniqueCycles.filter(cycle => cycle && cycle.length >= 3);
+
     // Remove clockwise cycles (keep only counter-clockwise = rooms)
-    return Utils.removeIf(uniqueCycles, Utils.isClockwise);
+    return Utils.removeIf(validCycles, Utils.isClockwise);
   }
 }
 
