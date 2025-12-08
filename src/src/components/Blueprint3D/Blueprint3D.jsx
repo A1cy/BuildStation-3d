@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Model, Canvas2D, MODES } from '../../core/Blueprint3D';
 import FloorPlanView from '../FloorPlanner/FloorPlanView';
 import './Blueprint3D.css';
@@ -35,6 +36,8 @@ class Blueprint3D extends Component {
     this.renderer = null;
     this.camera = null;
     this.controls = null;
+    this.groundPlane = null;
+    this.skybox = null;
 
     // State
     this.state = {
@@ -45,10 +48,12 @@ class Blueprint3D extends Component {
 
   componentDidMount() {
     this.initBlueprint3D();
+    window.addEventListener('resize', this.handleWindowResize);
   }
 
   componentWillUnmount() {
     this.cleanupBlueprint3D();
+    window.removeEventListener('resize', this.handleWindowResize);
   }
 
   componentDidUpdate(prevProps) {
@@ -70,7 +75,7 @@ class Blueprint3D extends Component {
     // Create ViewModel for 2D canvas
     this.createViewModel();
 
-    // TODO: Initialize 3D renderer
+    // Initialize 3D renderer
     this.init3DRenderer();
 
     // Register floor plan update callbacks
@@ -78,6 +83,8 @@ class Blueprint3D extends Component {
       if (this.canvas2d) {
         this.canvas2d.draw();
       }
+      // Update 3D scene when floor plan changes
+      this.update3DFloorPlan();
     });
 
     console.log('Blueprint3D initialized', this.model);
@@ -155,32 +162,167 @@ class Blueprint3D extends Component {
     const height = container.clientHeight;
 
     // Create renderer
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer = new THREE.WebGLRenderer({ 
+      antialias: true,
+      alpha: true 
+    });
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.setClearColor(0x87ceeb, 1); // Sky blue background
 
+    // Add to DOM
+    this.renderer.domElement.style.position = 'absolute';
+    this.renderer.domElement.style.top = '0';
+    this.renderer.domElement.style.left = '0';
+    this.renderer.domElement.style.display = this.props.viewMode === '3d' ? 'block' : 'none';
     container.appendChild(this.renderer.domElement);
 
     // Create camera
     this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
-    this.camera.position.set(0, 300, 300);
+    this.camera.position.set(500, 400, 500);
     this.camera.lookAt(0, 0, 0);
 
-    // TODO: Add orbit controls
-    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // Add OrbitControls
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.05;
+    this.controls.screenSpacePanning = false;
+    this.controls.minDistance = 100;
+    this.controls.maxDistance = 2000;
+    this.controls.maxPolarAngle = Math.PI / 2; // Don't go below ground
 
-    // Add basic lighting
-    const ambientLight = new THREE.AmbientLight(0x404040);
-    this.model.scene.add(ambientLight);
+    // Create enhanced lighting
+    this.createLighting();
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    directionalLight.position.set(100, 100, 100);
-    this.model.scene.add(directionalLight);
+    // Create ground plane
+    this.createGroundPlane();
+
+    // Create skybox
+    this.createSkybox();
 
     // Start render loop
     this.animate();
+  };
+
+  /**
+   * Create enhanced lighting system
+   */
+  createLighting = () => {
+    // Ambient light (soft overall illumination)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    this.model.scene.add(ambientLight);
+
+    // Main directional light (sun)
+    const sunLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    sunLight.position.set(500, 1000, 500);
+    sunLight.castShadow = true;
+    
+    // Configure shadow properties
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 2000;
+    sunLight.shadow.camera.left = -500;
+    sunLight.shadow.camera.right = 500;
+    sunLight.shadow.camera.top = 500;
+    sunLight.shadow.camera.bottom = -500;
+    
+    this.model.scene.add(sunLight);
+
+    // Hemisphere light (gradient from sky to ground)
+    const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x545454, 0.3);
+    hemiLight.position.set(0, 500, 0);
+    this.model.scene.add(hemiLight);
+
+    // Fill light (soften shadows)
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    fillLight.position.set(-500, 300, -500);
+    this.model.scene.add(fillLight);
+  };
+
+  /**
+   * Create ground plane
+   */
+  createGroundPlane = () => {
+    const groundGeometry = new THREE.PlaneGeometry(2000, 2000);
+    const groundMaterial = new THREE.MeshStandardMaterial({ 
+      color: 0xcccccc,
+      roughness: 0.8,
+      metalness: 0.2
+    });
+    
+    this.groundPlane = new THREE.Mesh(groundGeometry, groundMaterial);
+    this.groundPlane.rotation.x = -Math.PI / 2;
+    this.groundPlane.position.y = 0;
+    this.groundPlane.receiveShadow = true;
+    
+    this.model.scene.add(this.groundPlane);
+  };
+
+  /**
+   * Create skybox (gradient background)
+   */
+  createSkybox = () => {
+    // Create sky hemisphere
+    const skyGeometry = new THREE.SphereGeometry(5000, 32, 15);
+    const skyMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        topColor: { value: new THREE.Color(0x0077ff) },
+        bottomColor: { value: new THREE.Color(0xffffff) },
+        offset: { value: 500 },
+        exponent: { value: 0.6 }
+      },
+      vertexShader: `
+        varying vec3 vWorldPosition;
+        void main() {
+          vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+          vWorldPosition = worldPosition.xyz;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 topColor;
+        uniform vec3 bottomColor;
+        uniform float offset;
+        uniform float exponent;
+        varying vec3 vWorldPosition;
+        void main() {
+          float h = normalize(vWorldPosition + offset).y;
+          gl_FragColor = vec4(mix(bottomColor, topColor, max(pow(max(h, 0.0), exponent), 0.0)), 1.0);
+        }
+      `,
+      side: THREE.BackSide
+    });
+    
+    this.skybox = new THREE.Mesh(skyGeometry, skyMaterial);
+    this.model.scene.add(this.skybox);
+  };
+
+  /**
+   * Update 3D floor plan visualization (walls, rooms)
+   */
+  update3DFloorPlan = () => {
+    // TODO: Create 3D wall meshes from floor plan
+    // TODO: Create 3D floor meshes for rooms
+    // For now, just log that an update is needed
+    console.log('Floor plan updated, 3D meshes need updating');
+  };
+
+  /**
+   * Handle window resize
+   */
+  handleWindowResize = () => {
+    if (!this.containerRef.current || !this.renderer || !this.camera) return;
+
+    const width = this.containerRef.current.clientWidth;
+    const height = this.containerRef.current.clientHeight;
+
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+
+    this.renderer.setSize(width, height);
   };
 
   /**
@@ -189,6 +331,12 @@ class Blueprint3D extends Component {
   animate = () => {
     requestAnimationFrame(this.animate);
 
+    // Update controls
+    if (this.controls) {
+      this.controls.update();
+    }
+
+    // Render scene
     if (this.renderer && this.camera && this.model) {
       this.renderer.render(this.model.scene.getScene(), this.camera);
     }
@@ -370,6 +518,11 @@ class Blueprint3D extends Component {
     const { viewMode } = this.props;
     console.log('View mode changed to:', viewMode);
 
+    // Show/hide appropriate renderer
+    if (this.renderer && this.renderer.domElement) {
+      this.renderer.domElement.style.display = viewMode === '3d' ? 'block' : 'none';
+    }
+
     // Redraw 2D canvas if switching to 2D
     if (viewMode === '2d' && this.canvas2d) {
       setTimeout(() => this.canvas2d.handleWindowResize(), 100);
@@ -380,9 +533,15 @@ class Blueprint3D extends Component {
    * Clean up Three.js resources
    */
   cleanupBlueprint3D = () => {
+    if (this.controls) {
+      this.controls.dispose();
+    }
+
     if (this.renderer) {
       this.renderer.dispose();
-      this.renderer.domElement.remove();
+      if (this.renderer.domElement && this.renderer.domElement.parentNode) {
+        this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
+      }
     }
 
     if (this.model) {
