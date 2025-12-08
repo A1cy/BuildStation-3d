@@ -16,34 +16,37 @@
  * }]
  */
 
+// Placeholder image data URL (1x1 gray pixel)
+const PLACEHOLDER_IMG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN89+7dfwAJQwPNonQ0pQAAAABJRU5ErkJggg==';
+
 const PRODUCT_CATALOG = [
   {
     category: 'Bathroom',
     styles: [
       {
         name: 'Cabinet BSC-2DH-GD',
-        image: '/Blueprint3D-assets/furniture/bathroom/thumbnails/BSC-2DH-GD.jpg',
+        image: PLACEHOLDER_IMG,
         model: '/Blueprint3D-assets/furniture/bathroom/BSC-2DH-GD.glb',
         type: 'furniture',
         subtype: 'bathroom-cabinet'
       },
       {
         name: 'Cabinet BSC-2DL-GD',
-        image: '/Blueprint3D-assets/furniture/bathroom/thumbnails/BSC-2DL-GD.jpg',
+        image: PLACEHOLDER_IMG,
         model: '/Blueprint3D-assets/furniture/bathroom/BSC-2DL-GD.glb',
         type: 'furniture',
         subtype: 'bathroom-cabinet'
       },
       {
         name: 'Cabinet BSC-LDH-GD',
-        image: '/Blueprint3D-assets/furniture/bathroom/thumbnails/BSC-LDH-GD.jpg',
+        image: PLACEHOLDER_IMG,
         model: '/Blueprint3D-assets/furniture/bathroom/BSC-LDH-GD.glb',
         type: 'furniture',
         subtype: 'bathroom-cabinet'
       },
       {
         name: 'Cabinet BSC-OP',
-        image: '/Blueprint3D-assets/furniture/bathroom/thumbnails/BSC-OP.jpg',
+        image: PLACEHOLDER_IMG,
         model: '/Blueprint3D-assets/furniture/bathroom/BSC-OP.glb',
         type: 'furniture',
         subtype: 'bathroom-cabinet'
@@ -54,30 +57,30 @@ const PRODUCT_CATALOG = [
     category: 'Bedroom',
     styles: [
       {
-        name: 'Bed Frame',
-        image: '/Blueprint3D-assets/furniture/bedroom/thumbnails/bed.jpg',
-        model: '/Blueprint3D-assets/furniture/bedroom/bed.glb',
+        name: 'Bed BC-MB',
+        image: PLACEHOLDER_IMG,
+        model: '/Blueprint3D-assets/furniture/bedroom/BC-MB.glb',
         type: 'furniture',
         subtype: 'bed'
       },
       {
-        name: 'Nightstand',
-        image: '/Blueprint3D-assets/furniture/bedroom/thumbnails/nightstand.jpg',
-        model: '/Blueprint3D-assets/furniture/bedroom/nightstand.glb',
+        name: 'Bed BC-RC',
+        image: PLACEHOLDER_IMG,
+        model: '/Blueprint3D-assets/furniture/bedroom/BC-RC.glb',
         type: 'furniture',
-        subtype: 'nightstand'
+        subtype: 'bed'
       },
       {
-        name: 'Dresser',
-        image: '/Blueprint3D-assets/furniture/bedroom/thumbnails/dresser.jpg',
-        model: '/Blueprint3D-assets/furniture/bedroom/dresser.glb',
+        name: 'Bed BC-SB',
+        image: PLACEHOLDER_IMG,
+        model: '/Blueprint3D-assets/furniture/bedroom/BC-SB.glb',
         type: 'furniture',
-        subtype: 'dresser'
+        subtype: 'bed'
       },
       {
-        name: 'Wardrobe',
-        image: '/Blueprint3D-assets/furniture/bedroom/thumbnails/wardrobe.jpg',
-        model: '/Blueprint3D-assets/furniture/bedroom/wardrobe.glb',
+        name: 'Rack BR-BML',
+        image: PLACEHOLDER_IMG,
+        model: '/Blueprint3D-assets/furniture/bedroom/BR-BML.glb',
         type: 'furniture',
         subtype: 'wardrobe'
       }
