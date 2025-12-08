@@ -14,6 +14,9 @@ import PropertyPanel from './components/PropertyPanel';
 import ProductControls from './components/ProductControls';
 import ImportModal from './components/ImportModal';
 
+// Data imports
+import PRODUCT_CATALOG from './data/productCatalog';
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -163,6 +166,26 @@ class App extends Component {
 
             {/* Main Content - 2D/3D Scene + Product List */}
             <div className={`main-container ${selectedItem ? '' : 'wide'}`}>
+              {/* Temporary Toggle Button for Testing */}
+              <button
+                onClick={() => this.setState({ showProducts: !showProducts })}
+                style={{
+                  position: 'absolute',
+                  top: 20,
+                  left: 20,
+                  zIndex: 1000,
+                  padding: '10px 20px',
+                  background: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '16px'
+                }}
+              >
+                {showProducts ? 'Hide Products' : 'Show Products'}
+              </button>
+
               {/* Blueprint3D Scene Container */}
               <div className="scenes-container">
                 {/* <Blueprint3D
@@ -189,14 +212,14 @@ class App extends Component {
                   borderRight: '1px solid #ccc'
                 }}
               >
-                {/* <ProductList
+                <ProductList
                   items={PRODUCT_CATALOG}
                   onClose={() => this.setState({ showProducts: false })}
                   onProductClicked={(product) => {
                     console.log(product);
                     this.handleProductClicked(product);
                   }}
-                /> */}
+                />
               </div>
 
               {/* Loading Overlay */}

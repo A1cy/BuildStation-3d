@@ -1,0 +1,96 @@
+/* ProductList Component Styles */
+
+.category-section {
+  background: #fff;
+  padding: 15px;
+}
+
+.category-section .search-box {
+  margin: 10px 0;
+  height: 30px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 15px;
+  padding: 0 15px;
+  width: -webkit-fill-available;
+  width: -moz-available;
+  width: fill-available;
+}
+
+.category-section .search-box:focus {
+  outline: none;
+  border-color: #999;
+}
+
+.category-section .category-item {
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px;
+  transition: 0.3s;
+  border: 1px solid #eee;
+  margin: 2px 0;
+  user-select: none;
+}
+
+.category-section .category-item:hover {
+  background: #eee;
+}
+
+.category-section .category-item.active {
+  background: #ccc;
+  font-weight: bold;
+}
+
+.styles-section {
+  display: flex;
+  background: #fff;
+  padding-top: 10px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.styles-section .styles-item {
+  width: 100px;
+  height: 100px;
+  margin: 5px;
+  cursor: pointer;
+  position: relative;
+  border: 2px solid transparent;
+  transition: 0.2s;
+}
+
+.styles-section .styles-item:hover {
+  border-color: #666;
+  transform: scale(1.05);
+}
+
+.styles-section .styles-item img {
+  width: inherit;
+  height: inherit;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.styles-section .styles-item .tip {
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px;
+  font-size: 12px;
+  border-radius: 3px;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.styles-section .styles-item:hover .tip {
+  opacity: 1;
+  bottom: 10px;
+  transition: 0.3s;
+}
