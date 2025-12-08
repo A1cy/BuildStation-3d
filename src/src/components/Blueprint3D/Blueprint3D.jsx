@@ -1,222 +1,182 @@
-/**
- * Blueprint3D - Main wrapper component for 2D floor planning and 3D visualization
- * Integrates floor planner, Three.js 3D scene, model loading, and item management
- * Acts as the central coordinator between 2D and 3D views
- */
-
 import React, { Component } from 'react';
-import FloorPlanView from '../FloorPlanner/FloorPlanView';
+import * as THREE from 'three';
+import { Model } from '../../core/Blueprint3D';
 import './Blueprint3D.css';
 
-// import BP3DLib from './bp3d-lib'; // Will be integrated when BP3D library is extracted
-
-// Default floor plan configuration
-const DEFAULT_FLOORPLAN = {
-  corners: {},
-  walls: [],
-  rooms: [],
-  items: []
-};
+/**
+ * Blueprint3D React Component
+ * 
+ * React wrapper for the Blueprint3D floor planning system.
+ * Manages the 2D floor planner and 3D viewer, coordinates between views.
+ * 
+ * Props:
+ * - viewMode: '2d' | '3d' - Current view mode
+ * - measureUnit: string - Measurement unit (in/cm/m)
+ * - onItemSelected: (item) => void - Called when item is selected
+ * - onItemUnselected: () => void - Called when item is deselected
+ * - onSwitchMode: () => void - Called when view mode should switch
+ */
 
 class Blueprint3D extends Component {
   constructor(props) {
     super(props);
 
-    // Refs for DOM elements
-    this.elFloorPlannerElement = null;
-    this.elThreeElemContainer = null;
+    // Refs
+    this.containerRef = React.createRef();
+    this.canvasRef = React.createRef();
 
-    // BP3D library instance (will be initialized)
-    this.bp3d = null;
+    // Blueprint3D Model
+    this.model = null;
 
+    // Three.js components
+    this.renderer = null;
+    this.camera = null;
+    this.controls = null;
+
+    // State
     this.state = {
-      selectedItem: null
+      loading: false,
     };
   }
 
-  /**
-   * Initialize Blueprint3D library
-   * Sets up floor planner and Three.js scene
-   */
-  initializeBP3D = () => {
-    const config = {
-      floorplannerElement: this.elFloorPlannerElement,
-      threeElement: this.elThreeElemContainer,
-      textureDir: 'models/textures/',
-      widget: false
-    };
+  componentDidMount() {
+    this.initBlueprint3D();
+  }
 
-    // Initialize BP3D library (placeholder until library is extracted)
-    // this.bp3d = new BP3DLib(config);
+  componentWillUnmount() {
+    this.cleanupBlueprint3D();
+  }
 
-    // Load serialized floor plan
-    const defaultJson = this.props.defaultJson || JSON.stringify(DEFAULT_FLOORPLAN);
-    // this.bp3d.model.loadSerialized(defaultJson);
-
-    // Register callbacks
-    // this.bp3d.three.itemSelectedCallbacks.push(this.handleItemSelected);
-    // this.bp3d.three.itemUnselectedCallbacks.push(this.handleItemUnselected);
-    // this.bp3d.floorplanner.itemSelectedCallbacks.push(this.handleItemSelected);
-    // this.bp3d.floorplanner.itemUnselectedCallbacks.push(this.handleItemUnselected);
-
-    console.log('BP3D initialized (placeholder)');
-  };
-
-  /**
-   * Component lifecycle - initialize BP3D after mount
-   */
-  componentDidMount = () => {
-    setTimeout(() => {
-      this.initializeBP3D();
-    }, 1000);
-  };
-
-  /**
-   * Handle prop changes (unit, view mode)
-   * @param {Object} nextProps - Next props
-   */
-  componentWillReceiveProps = (nextProps) => {
-    // Handle measurement unit change
-    if (nextProps.measureUnit !== this.props.measureUnit) {
-      // this.bp3d.changeUnit(nextProps.measureUnit);
-      console.log('Unit changed to:', nextProps.measureUnit);
+  componentDidUpdate(prevProps) {
+    // Handle view mode changes
+    if (prevProps.viewMode !== this.props.viewMode) {
+      this.handleViewModeChange();
     }
+  }
 
-    // Handle view mode change (2D/3D)
-    if (nextProps.viewMode !== this.props.viewMode) {
-      setTimeout(() => {
-        // this.bp3d.model.floorplan.update();
-        window.dispatchEvent(new Event('resize'));
-      }, 10);
-    }
+  /**
+   * Initialize Blueprint3D system
+   */
+  initBlueprint3D = () => {
+    console.log('Initializing Blueprint3D...');
+
+    // Create Blueprint3D Model
+    this.model = new Model('/Blueprint3D-assets');
+
+    // TODO: Initialize 3D renderer
+    this.init3DRenderer();
+
+    // TODO: Initialize 2D canvas
+    // this.init2DCanvas();
+
+    // TODO: Set up event listeners
+    // this.setupEventListeners();
+
+    console.log('Blueprint3D initialized', this.model);
   };
 
   /**
-   * Set floor plan from JSON
-   * @param {string} json - Serialized floor plan JSON
+   * Initialize Three.js 3D renderer
    */
-  setJSON = (json) => {
-    // this.bp3d.model.loadSerialized(json);
-    console.log('Loading JSON:', json);
+  init3DRenderer = () => {
+    if (!this.containerRef.current) return;
+
+    const container = this.containerRef.current;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    // Create renderer
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer.setSize(width, height);
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    container.appendChild(this.renderer.domElement);
+
+    // Create camera
+    this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
+    this.camera.position.set(0, 300, 300);
+    this.camera.lookAt(0, 0, 0);
+
+    // TODO: Add orbit controls
+    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+
+    // Start render loop
+    this.animate();
   };
 
   /**
-   * Get current floor plan as JSON
-   * @returns {string} Serialized floor plan
+   * Animation loop
    */
-  getJSON = () => {
-    // return this.bp3d.model.exportSerialized();
-    return JSON.stringify(DEFAULT_FLOORPLAN);
-  };
+  animate = () => {
+    requestAnimationFrame(this.animate);
 
-  /**
-   * Take snapshot of 3D scene
-   * @returns {string} Data URL of snapshot
-   */
-  takeSnapshot = () => {
-    // return this.bp3d.three.dataUrl();
-    console.log('Taking snapshot...');
-    return '';
-  };
-
-  /**
-   * Handle item selection in scene
-   * @param {Object} item - Selected item
-   */
-  handleItemSelected = (item) => {
-    this.setState({ selectedItem: item });
-
-    if (typeof this.props.onItemSelected === 'function') {
-      this.props.onItemSelected(item);
+    if (this.renderer && this.camera && this.model) {
+      this.renderer.render(this.model.scene.getScene(), this.camera);
     }
   };
 
   /**
-   * Handle item deselection
+   * Handle view mode change (2D ↔ 3D)
    */
-  handleItemUnselected = () => {
-    this.setState({ selectedItem: null });
+  handleViewModeChange = () => {
+    const { viewMode } = this.props;
+    console.log('View mode changed to:', viewMode);
 
-    if (typeof this.props.onItemUnselected === 'function') {
-      this.props.onItemUnselected();
+    // TODO: Show/hide appropriate view
+    // For now, just log
+  };
+
+  /**
+   * Clean up Three.js resources
+   */
+  cleanupBlueprint3D = () => {
+    if (this.renderer) {
+      this.renderer.dispose();
+      this.renderer.domElement.remove();
+    }
+
+    if (this.model) {
+      this.model.scene.clearItems();
     }
   };
 
   /**
-   * Update window size (for responsive canvas)
+   * Public API methods (called via ref from parent)
    */
-  update = () => {
-    try {
-      // this.bp3d.three.updateWindowSize();
-      window.dispatchEvent(new Event('resize'));
-    } catch (error) {
-      console.error('Update error:', error);
-    }
-  };
 
   /**
-   * Get default data for product
-   * @param {Object} product - Product metadata
-   * @returns {Object} Default morph, styles, metadata
-   */
-  getDefaultData = (product) => {
-    const defaultMorph = {};
-    const defaultStyles = {};
-
-    // Set default morph values from product configuration
-    if (Array.isArray(product.morph)) {
-      product.morph.forEach((morph) => {
-        defaultMorph[morph.index] = (morph.min - 5) / 295;
-      });
-    }
-
-    // Set default style values
-    if (Array.isArray(product.styles)) {
-      product.styles.forEach((style) => {
-        defaultStyles[style.name_in_model] = style.types[0].name_in_model;
-      });
-    }
-
-    return {
-      defaultMorph,
-      defaultStyles,
-      metadata: {
-        ...product,
-        itemName: product.name,
-        modelUrl: product.model,
-        itemType: product.type
-      }
-    };
-  };
-
-  /**
-   * Add item to scene
-   * @param {Object} product - Product configuration
-   * @returns {Promise<Object>} Added item
+   * Add an item to the scene
+   * @param {Object} product - Product data
+   * @returns {Promise<Item>}
    */
   addItem = async (product) => {
+    if (!this.model) return null;
+
+    console.log('Adding item:', product);
+
+    const position = new THREE.Vector3(0, 0, 0); // Default position
+    const rotation = 0; // Default rotation
+
     try {
-      const { defaultMorph, defaultStyles, metadata } = this.getDefaultData(product);
+      const item = await this.model.scene.addItem(
+        product.type || 1,
+        product.model,
+        product,
+        position,
+        rotation,
+        {}
+      );
 
-      // Add item via BP3D library
-      // const item = await this.bp3d.model.scene.addItem(
-      //   product.type,
-      //   product.model,
-      //   metadata,
-      //   null,
-      //   null,
-      //   {
-      //     styles: defaultStyles,
-      //     morph: defaultMorph,
-      //     stackable: product.stackable,
-      //     stackontop: product.stackontop,
-      //     overlappable: product.overlappable
-      //   }
-      // );
+      console.log('Item added:', item);
 
-      console.log('Adding item:', product.name);
-      // return item;
-      return null;
+      // Fire selection callback
+      if (this.props.onItemSelected) {
+        this.props.onItemSelected(item);
+      }
+
+      return item;
     } catch (error) {
       console.error('Error adding item:', error);
       return null;
@@ -225,205 +185,71 @@ class Blueprint3D extends Component {
 
   /**
    * Duplicate currently selected item
-   * @returns {Promise<Object>} Duplicated item
    */
-  duplicateItem = async () => {
-    const { selectedItem } = this.state;
+  duplicateItem = () => {
+    console.log('Duplicate item - not yet implemented');
+    // TODO: Implement duplication
+  };
 
-    if (!selectedItem) {
-      return null;
-    }
+  /**
+   * Add a set/group of items
+   * @param {Object} setData - Set configuration
+   */
+  addSet = async (setData) => {
+    if (!this.model) return;
 
-    try {
-      const metadata = selectedItem.metadata;
-      const options = selectedItem.getOptions();
-      const position = selectedItem.position;
-      const rotation = selectedItem.rotation.y;
+    console.log('Adding set:', setData);
+    // TODO: Implement set addition
+  };
 
-      // Duplicate via BP3D library
-      // const item = await this.bp3d.model.scene.addItem(
-      //   metadata.type,
-      //   metadata.model,
-      //   metadata,
-      //   position,
-      //   rotation,
-      //   options
-      // );
+  /**
+   * Get current design as JSON
+   * @returns {string} JSON string
+   */
+  getJSON = () => {
+    if (!this.model) return '{}';
+    return this.model.exportSerialized();
+  };
 
-      console.log('Duplicating item');
-      // return item;
-      return null;
-    } catch (error) {
-      console.error('Error duplicating item:', error);
-      return null;
-    }
+  /**
+   * Load design from JSON
+   * @param {string} json - JSON string from getJSON()
+   */
+  setJSON = (json) => {
+    if (!this.model) return;
+    this.model.loadSerialized(json);
+  };
+
+  /**
+   * Take a snapshot of the current scene
+   * @returns {string} Data URL of snapshot
+   */
+  takeSnapshot = () => {
+    if (!this.renderer) return null;
+
+    this.renderer.render(this.model.scene.getScene(), this.camera);
+    return this.renderer.domElement.toDataURL('image/png');
   };
 
   /**
    * Import set from external builder
-   * @param {Object} setData - Set configuration
+   * @param {Object} setData - Set data from builder
    */
   importSetFromBuilder = (setData) => {
-    // this.bp3d.model.scene.importSetFromBuilder(
-    //   { itemName: 'Imported Set', items: setData },
-    //   setData
-    // );
-    console.log('Importing set from builder:', setData);
-  };
-
-  /**
-   * Add set/group of items
-   * @param {Object} set - Set configuration
-   */
-  addSet = (set) => {
-    const setData = {
-      ...set,
-      itemName: set.name
-    };
-
-    // this.bp3d.model.scene.addSet(setData, set.items);
-    console.log('Adding set:', set.name);
-  };
-
-  /**
-   * Replace item in a set
-   * @param {number} itemIndex - Item index in set
-   * @param {Object} newProduct - New product configuration
-   */
-  replaceSetItem = async (itemIndex, newProduct) => {
-    const { selectedItem } = this.state;
-
-    if (!selectedItem || !selectedItem.isSet) {
-      return null;
-    }
-
-    try {
-      const oldItem = selectedItem.linkedItems[itemIndex];
-      const position = oldItem.position;
-      const rotation = oldItem.rotation.y;
-      const options = oldItem.getOptions();
-
-      // Remove old item
-      selectedItem.linkedItems[itemIndex].remove();
-
-      // Add new item
-      const { metadata } = this.getDefaultData(newProduct);
-      // const newItem = await this.bp3d.model.scene.addItem(
-      //   newProduct.type,
-      //   newProduct.model,
-      //   metadata,
-      //   position,
-      //   rotation,
-      //   options,
-      //   false
-      // );
-
-      // Update set linkage
-      // selectedItem.linkedItems[itemIndex] = newItem;
-      // newItem.groupParent = selectedItem;
-
-      console.log('Replacing set item');
-      return null;
-    } catch (error) {
-      console.error('Error replacing set item:', error);
-      return null;
-    }
-  };
-
-  /**
-   * Update material on selected item
-   * @param {string} materialName - Material name in model
-   * @param {Object} materialType - Material type object
-   */
-  updateMaterial = (materialName, materialType) => {
-    const { selectedItem } = this.state;
-
-    if (selectedItem) {
-      // selectedItem.updateMaterial(materialName, materialType);
-      console.log('Updating material:', materialName, materialType);
-    }
-  };
-
-  /**
-   * Update style on selected item
-   * @param {string} styleName - Style name in model
-   * @param {string} styleValue - Style value
-   */
-  updateStyle = (styleName, styleValue) => {
-    const { selectedItem } = this.state;
-
-    if (selectedItem) {
-      // selectedItem.updateStyle(styleName, styleValue);
-      console.log('Updating style:', styleName, styleValue);
-    }
-  };
-
-  /**
-   * Set morph target value
-   * @param {number} morphIndex - Morph target index
-   * @param {number} value - Morph value (0-1)
-   */
-  setMorph = (morphIndex, value) => {
-    // Implementation would update morph targets
-    console.log('Setting morph:', morphIndex, value);
-  };
-
-  /**
-   * Set dimension visibility
-   * @param {boolean} visible - Show/hide dimensions
-   */
-  setDimensionVisible = (visible) => {
-    // this.bp3d.three.setDimensionVisible(visible);
-    console.log('Dimension visibility:', visible);
-  };
-
-  /**
-   * Set scene locked state
-   * @param {boolean} locked - Lock/unlock scene
-   */
-  setLocked = (locked) => {
-    // this.bp3d.three.setLocked(locked);
-    console.log('Scene locked:', locked);
-  };
-
-  /**
-   * Set snap to grid
-   * @param {boolean} snap - Enable/disable snap
-   */
-  setSnap = (snap) => {
-    // this.bp3d.floorplanner.setSnap(snap);
-    console.log('Snap:', snap);
-  };
-
-  /**
-   * Toggle X-Ray mode
-   * @param {boolean} enabled - Enable/disable X-Ray
-   */
-  setToggleXRay = (enabled) => {
-    // this.bp3d.three.setXRay(enabled);
-    console.log('X-Ray:', enabled);
+    console.log('Import set from builder:', setData);
+    // TODO: Implement import
   };
 
   render() {
-    const { viewMode } = this.props;
+    const { loading } = this.state;
 
     return (
-      <div className="blueprint3d-container">
-        {/* Floor Planner (2D) */}
-        <div
-          ref={(el) => (this.elFloorPlannerElement = el)}
-          className={`floorplanner-view ${viewMode === '2d' ? 'visible' : 'hidden'}`}
-        >
-          <FloorPlanView hidden={viewMode !== '2d'} />
-        </div>
-
-        {/* Three.js Viewer (3D) */}
-        <div
-          ref={(el) => (this.elThreeElemContainer = el)}
-          className={`threejs-view ${viewMode === '3d' ? 'visible' : 'hidden'}`}
-        >
-          {/* Three.js canvas will be inserted here by BP3D library */}
-        </div>
+      <div className="blueprint3d-container" ref={this.containerRef}>
+        {loading && (
+          <div className="blueprint3d-loading">
+            <span>Loading...</span>
+          </div>
+        )}
       </div>
     );
   }

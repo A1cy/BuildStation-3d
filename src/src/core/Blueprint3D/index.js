@@ -7,3 +7,6 @@ export { default as Wall } from './Wall';
 export { default as Corner } from './Corner';
 export { default as HalfEdge } from './HalfEdge';
 export { default as Room } from './Room';
+export { default as FloorPlan } from './FloorPlan';
+export { default as Scene } from './Scene';
+export { default as Model } from './Model';

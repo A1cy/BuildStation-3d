@@ -209,6 +209,77 @@ class Utils {
   static map(array, fn) {
     return array.map(fn);
   }
+
+  /**
+   * Remove a value from an array
+   * @param {Array} array - Array to modify
+   * @param {*} value - Value to remove
+   */
+  static removeValue(array, value) {
+    const index = array.indexOf(value);
+    if (index > -1) {
+      array.splice(index, 1);
+    }
+  }
+
+  /**
+   * Check if array has a value
+   * @param {Array} array - Array to check
+   * @param {*} value - Value to find
+   * @returns {boolean} True if value exists
+   */
+  static hasValue(array, value) {
+    return array.indexOf(value) > -1;
+  }
+
+  /**
+   * Cycle array elements (rotate)
+   * @param {Array} array - Input array
+   * @param {number} shift - Number of positions to shift
+   * @returns {Array} Rotated array
+   */
+  static cycle(array, shift) {
+    const result = [];
+    for (let i = 0; i < array.length; i++) {
+      result.push(array[(i + shift) % array.length]);
+    }
+    return result;
+  }
+
+  /**
+   * Remove elements from array that match a predicate
+   * @param {Array} array - Array to filter
+   * @param {Function} predicate - Test function
+   * @returns {Array} Filtered array
+   */
+  static removeIf(array, predicate) {
+    return array.filter((element) => !predicate(element));
+  }
+
+  /**
+   * Test if a point is inside a polygon
+   * @param {number} x - Point X coordinate
+   * @param {number} y - Point Y coordinate
+   * @param {Array<{x: number, y: number}>} polygon - Polygon vertices
+   * @returns {boolean} True if point is inside polygon
+   */
+  static pointInPolygon(x, y, polygon) {
+    let inside = false;
+
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const xi = polygon[i].x;
+      const yi = polygon[i].y;
+      const xj = polygon[j].x;
+      const yj = polygon[j].y;
+
+      const intersect =
+        yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+
+      if (intersect) inside = !inside;
+    }
+
+    return inside;
+  }
 }
 
 export default Utils;
