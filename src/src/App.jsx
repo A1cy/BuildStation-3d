@@ -147,21 +147,32 @@ class App extends Component {
           <div className="container">
             {/* Left Sidebar - Toolbar and Controls */}
             <div className="left-container">
-              {/* <Sidebar
+              <Sidebar
                 viewMode={viewMode}
                 onShow3DViewClicked={() => this.setState({ viewMode: '3d' })}
                 onShow2DPlanner={() => this.setState({ viewMode: '2d' })}
-                onShowDimensionsToggled={(enabled) => this.refBp3d.setDimensionVisible(enabled)}
-                onLockSceneToggled={(locked) => this.refBp3d.setLocked(locked)}
-                onSnapToggled={(enabled) => this.refBp3d.setSnap(enabled)}
-                onXRayToggled={(enabled) => this.refBp3d.setToggleXRay(enabled)}
+                onShowDimensionsToggled={(enabled) => {
+                  console.log('Dimensions toggled:', enabled);
+                  // TODO: Wire to Blueprint3D when integrated
+                }}
+                onLockSceneToggled={(locked) => {
+                  console.log('Lock toggled:', locked);
+                  // TODO: Wire to Blueprint3D when integrated
+                }}
+                onSnapToggled={(enabled) => {
+                  console.log('Snap toggled:', enabled);
+                  // TODO: Wire to Blueprint3D when integrated
+                }}
+                onXRayToggled={(enabled) => {
+                  console.log('X-Ray toggled:', enabled);
+                  // TODO: Wire to Blueprint3D when integrated
+                }}
                 onAddProductClicked={() => this.setState({ showProducts: !showProducts })}
-                onImportFromConfiguratorClicked={() => this.setState({ showImportSetModal: true })}
                 onSaveClicked={this.handleSaveJson}
                 onLoadClicked={this.handleLoadJson}
                 onSnapshotClicked={this.handleSnapshot}
                 onUnitChanged={(unit) => this.setState({ measureUnit: unit })}
-              /> */}
+              />
             </div>
 
             {/* Main Content - 2D/3D Scene + Product List */}
