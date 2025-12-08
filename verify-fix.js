@@ -23,8 +23,8 @@ async function verifyFix() {
     errors.push(`Page error: ${error.message}`);
   });
 
-  console.log('Navigating to http://localhost:5173...');
-  await page.goto('http://localhost:5173', { waitUntil: 'networkidle' });
+  console.log('Navigating to http://localhost:3000...');
+  await page.goto('http://localhost:3000', { waitUntil: 'networkidle' });
 
   // Wait a bit for Three.js to initialize
   console.log('Waiting for initialization...');
