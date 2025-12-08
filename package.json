@@ -22,12 +22,12 @@
   ],
   "author": "Build-Station",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "http-server": "^14.1.1",
-    "source-map-explorer": "^2.5.3",
     "js-beautify": "^1.14.11",
+    "playwright": "^1.57.0",
     "prettier": "^3.1.0",
+    "source-map-explorer": "^2.5.3",
     "webpack-bundle-analyzer": "^4.10.1"
   }
 }

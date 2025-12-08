@@ -103,11 +103,11 @@ class Utils {
    * @returns {boolean} True if clockwise
    */
   static isClockwise(vertices) {
-    const minX = Math.min(0, Math.min(...this.map(vertices, v => v.x)));
-    const minY = Math.min(0, Math.min(...this.map(vertices, v => v.y)));
+    const minX = Math.min(0, Math.min(...Utils.map(vertices, v => v.x)));
+    const minY = Math.min(0, Math.min(...Utils.map(vertices, v => v.y)));
 
     // Translate polygon to ensure all coords are positive
-    const translated = this.map(vertices, v => ({
+    const translated = Utils.map(vertices, v => ({
       x: v.x - minX,
       y: v.y - minY
     }));
