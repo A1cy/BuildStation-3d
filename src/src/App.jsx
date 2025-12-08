@@ -198,7 +198,8 @@ class App extends Component {
                   height: '100vh',
                   overflow: 'auto',
                   background: 'white',
-                  borderRight: '1px solid #ccc'
+                  borderRight: '1px solid #ccc',
+                  zIndex: 1000
                 }}
               >
                 <ProductList

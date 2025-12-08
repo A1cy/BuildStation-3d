@@ -30,9 +30,41 @@ class Model {
     // Create core components
     this.floorplan = new FloorPlan();
     this.scene = new Scene(this, textureDir);
-    
+
     // Link scene to floorplan
     this.floorplan.scene = this.scene;
+
+    // Initialize default room (approximately 6m x 4m)
+    this.initializeDefaultRoom();
+  }
+
+  /**
+   * Initialize default room for new floor plans
+   * Creates a rectangular room (6m x 4m) centered at origin
+   */
+  initializeDefaultRoom = () => {
+    // Default room dimensions in Blueprint3D units
+    const width = 6;   // 6 meters wide (X axis)
+    const depth = 4;   // 4 meters deep (Z axis)
+
+    // Create four corners forming a rectangle centered at origin
+    const c1 = this.floorplan.newCorner(-width/2, -depth/2);  // Bottom-left
+    const c2 = this.floorplan.newCorner(width/2, -depth/2);   // Bottom-right
+    const c3 = this.floorplan.newCorner(width/2, depth/2);    // Top-right
+    const c4 = this.floorplan.newCorner(-width/2, depth/2);   // Top-left
+
+    // Create walls connecting the corners
+    this.floorplan.newWall(c1, c2);  // Bottom wall
+    this.floorplan.newWall(c2, c3);  // Right wall
+    this.floorplan.newWall(c3, c4);  // Top wall
+    this.floorplan.newWall(c4, c1);  // Left wall
+
+    // FloorPlan.update() is automatically called by newWall()
+    // This will:
+    // 1. Detect the closed loop of corners
+    // 2. Create a Room object
+    // 3. Fire updated_rooms callbacks
+    // 4. Blueprint3D.update3DFloorPlan() will create 3D wall meshes
   }
 
   /**

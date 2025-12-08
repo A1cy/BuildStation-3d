@@ -309,10 +309,94 @@ class Blueprint3D extends Component {
    * Update 3D floor plan visualization (walls, rooms)
    */
   update3DFloorPlan = () => {
-    // TODO: Create 3D wall meshes from floor plan
-    // TODO: Create 3D floor meshes for rooms
-    // For now, just log that an update is needed
-    console.log('Floor plan updated, 3D meshes need updating');
+    if (!this.model || !this.model.floorplan) return;
+
+    // Remove existing floor plan meshes
+    if (this.floorPlanGroup) {
+      this.model.scene.remove(this.floorPlanGroup);
+    }
+
+    // Create new group for floor plan meshes
+    this.floorPlanGroup = new THREE.Group();
+
+    // Create wall meshes
+    const wallHeight = 2.5; // 2.5 meters tall
+    const wallThickness = 0.1; // 10cm thick
+    const wallMaterial = new THREE.MeshStandardMaterial({
+      color: 0xeeeeee,
+      roughness: 0.9,
+      metalness: 0.1
+    });
+
+    this.model.floorplan.walls.forEach((wall) => {
+      const start = wall.getStart();
+      const end = wall.getEnd();
+
+      // Calculate wall position and dimensions
+      const dx = end.x - start.x;
+      const dy = end.y - start.y;
+      const length = Math.sqrt(dx * dx + dy * dy);
+      const angle = Math.atan2(dy, dx);
+
+      // Create wall mesh
+      const wallGeometry = new THREE.BoxGeometry(length, wallHeight, wallThickness);
+      const wallMesh = new THREE.Mesh(wallGeometry, wallMaterial);
+
+      // Position wall
+      wallMesh.position.set(
+        (start.x + end.x) / 2,
+        wallHeight / 2,
+        (start.y + end.y) / 2
+      );
+
+      // Rotate wall to match wall direction
+      wallMesh.rotation.y = angle;
+
+      // Enable shadows
+      wallMesh.castShadow = true;
+      wallMesh.receiveShadow = true;
+
+      this.floorPlanGroup.add(wallMesh);
+    });
+
+    // Create floor meshes for rooms
+    const floorMaterial = new THREE.MeshStandardMaterial({
+      color: 0xcccccc,
+      roughness: 0.8,
+      metalness: 0.2
+    });
+
+    this.model.floorplan.rooms.forEach((room) => {
+      // Get room corners
+      const corners = room.corners;
+      if (corners.length < 3) return; // Need at least 3 corners for a polygon
+
+      // Create floor shape from corners
+      const shape = new THREE.Shape();
+      shape.moveTo(corners[0].x, corners[0].y);
+      for (let i = 1; i < corners.length; i++) {
+        shape.lineTo(corners[i].x, corners[i].y);
+      }
+      shape.lineTo(corners[0].x, corners[0].y); // Close the shape
+
+      // Extrude shape to create floor mesh
+      const floorGeometry = new THREE.ShapeGeometry(shape);
+      const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
+
+      // Position floor (rotate to horizontal plane)
+      floorMesh.rotation.x = -Math.PI / 2;
+      floorMesh.position.y = 0.01; // Slightly above ground plane to prevent z-fighting
+
+      // Enable shadows
+      floorMesh.receiveShadow = true;
+
+      this.floorPlanGroup.add(floorMesh);
+    });
+
+    // Add floor plan group to scene
+    this.model.scene.add(this.floorPlanGroup);
+
+    console.log('Floor plan updated: walls created, rooms rendered');
   };
 
   /**
