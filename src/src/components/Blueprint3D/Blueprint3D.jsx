@@ -88,6 +88,11 @@ class Blueprint3D extends Component {
     });
 
     console.log('Blueprint3D initialized', this.model);
+
+    // Initialize canvas if it was already loaded
+    if (this.canvas2DRef && !this.canvas2d) {
+      this.handleCanvasLoaded(this.canvas2DRef);
+    }
   };
 
   /**
@@ -347,7 +352,7 @@ class Blueprint3D extends Component {
    * @param {HTMLCanvasElement} canvas - Canvas element
    */
   handleCanvasLoaded = (canvas) => {
-    if (!canvas || this.canvas2d) return;
+    if (!canvas || this.canvas2d || !this.model) return;
 
     console.log('Canvas loaded, creating Canvas2D...');
     this.canvas2DRef = canvas;
