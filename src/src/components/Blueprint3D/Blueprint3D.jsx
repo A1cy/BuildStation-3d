@@ -1175,6 +1175,74 @@ class Blueprint3D extends Component {
   resetCamera = this.centerCamera;
 
   /**
+   * **NEW: Pan camera in 3D view (from bundle lines 5320-5333)**
+   * Uses OrbitControls panXY method to move camera view
+   * @param {string} direction - 'UP', 'DOWN', 'LEFT', or 'RIGHT'
+   */
+  pan = (direction) => {
+    if (!this.controls) return;
+
+    const panAmount = 30; // Pixels (matches production)
+
+    switch (direction) {
+      case 'UP':
+        this.controls.panXY(0, panAmount);
+        break;
+      case 'DOWN':
+        this.controls.panXY(0, -panAmount);
+        break;
+      case 'LEFT':
+        this.controls.panXY(panAmount, 0);
+        break;
+      case 'RIGHT':
+        this.controls.panXY(-panAmount, 0);
+        break;
+      default:
+        console.warn('⚠️ Unknown pan direction:', direction);
+        return;
+    }
+
+    this.controls.update();
+    console.log('🔄 Camera panned:', direction);
+  };
+
+  /**
+   * **NEW: Show dimension helpers for all items (from bundle lines 4758-4765)**
+   * Iterates through all items and calls showDimensionHelper()
+   */
+  showAllGizmo = () => {
+    try {
+      console.log('👁️ Show all dimension helpers');
+      const items = this.model.scene.getItems();
+      items.forEach((item) => {
+        if (item.showDimensionHelper) {
+          item.showDimensionHelper();
+        }
+      });
+    } catch (error) {
+      console.error('❌ Failed to show all gizmos:', error);
+    }
+  };
+
+  /**
+   * **NEW: Hide dimension helpers for all items (from bundle lines 4766-4773)**
+   * Iterates through all items and calls hideDimensionHelper()
+   */
+  hideAllGizmo = () => {
+    try {
+      console.log('🙈 Hide all dimension helpers');
+      const items = this.model.scene.getItems();
+      items.forEach((item) => {
+        if (item.hideDimensionHelper) {
+          item.hideDimensionHelper();
+        }
+      });
+    } catch (error) {
+      console.error('❌ Failed to hide all gizmos:', error);
+    }
+  };
+
+  /**
    * PHASE 2B Priority 2: Handle mouse down in 3D view (start drag or select)
    * Extracted from production bundle function H (mousedown handler) lines 4100-4150
    */

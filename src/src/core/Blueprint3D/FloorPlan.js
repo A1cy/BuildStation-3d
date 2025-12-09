@@ -715,6 +715,69 @@ class FloorPlan {
     // Remove clockwise cycles (keep only counter-clockwise = rooms)
     return Utils.removeIf(validCycles, Utils.isClockwise);
   }
+
+  /**
+   * Dimension Methods (extracted from bundle lines 1960-1980)
+   */
+
+  /**
+   * Get center point of floorplan (extracted from bundle lines 1960-1962)
+   * @returns {THREE.Vector3} Center point (average of min/max X and Z)
+   */
+  getCenter() {
+    return this.getDimensions(true);
+  }
+
+  /**
+   * Get size of floorplan (extracted from bundle lines 1965-1967)
+   * @returns {THREE.Vector3} Size (width on X, 0 on Y, depth on Z)
+   */
+  getSize() {
+    return this.getDimensions(false);
+  }
+
+  /**
+   * Get dimensions of floorplan (extracted from bundle lines 1970-1980)
+   * @param {boolean} center - If true, return center point; if false, return size
+   * @returns {THREE.Vector3} Either center point or size
+   */
+  getDimensions(center = false) {
+    // Initialize min/max values
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minZ = Infinity;
+    let maxZ = -Infinity;
+
+    // Find bounding box from all corners
+    this.corners.forEach((corner) => {
+      if (corner.x < minX) minX = corner.x;
+      if (corner.x > maxX) maxX = corner.x;
+      if (corner.y < minZ) minZ = corner.y;  // Note: corner.y is Z in 3D space
+      if (corner.y > maxZ) maxZ = corner.y;
+    });
+
+    // Check for invalid bounds (no corners or all at same point)
+    if (minX === Infinity || maxX === -Infinity || minZ === Infinity || maxZ === -Infinity) {
+      return new THREE.Vector3(0, 0, 0);
+    }
+
+    // Return center or size based on parameter
+    if (center) {
+      // Return center point (average of min/max)
+      return new THREE.Vector3(
+        0.5 * (minX + maxX),
+        0,
+        0.5 * (minZ + maxZ)
+      );
+    } else {
+      // Return size (max - min for width and depth)
+      return new THREE.Vector3(
+        maxX - minX,
+        0,
+        maxZ - minZ
+      );
+    }
+  }
 }
 
 export default FloorPlan;

@@ -1441,6 +1441,195 @@ class BaseItem extends THREE.Group {
   }
 
   /**
+   * Selection and Highlighting System (extracted from bundle lines 2923-2964)
+   */
+
+  /**
+   * Update selection highlight (extracted from bundle lines 2923-2944)
+   * Dispatches BP3D_EVENT_HIGHLIGHT_CHANGED event with meshes to highlight
+   */
+  updateHighlight() {
+    const shouldHighlight = this.hover || this.selected;
+    const meshesToHighlight = [];
+    const allMeshes = [];
+
+    // Collect meshes from this item
+    allMeshes.push(...this.childMeshes);
+
+    // Collect meshes from linked items
+    this.linkedItems.forEach((item) => {
+      allMeshes.push(...item.childMeshes);
+    });
+
+    // Collect meshes from group parent
+    if (this.groupParent) {
+      allMeshes.push(...this.groupParent.childMeshes);
+    }
+
+    // Filter out non-obstructing meshes (extracted from bundle line 2931-2934)
+    // These mesh names should not be highlighted: 'dimension', 'helper', 'gizmo', etc.
+    const excludeNames = ['dimension', 'helper', 'gizmo', 'guide', 'plane'];
+    allMeshes.forEach((mesh) => {
+      let shouldExclude = false;
+      excludeNames.forEach((excludeName) => {
+        if (mesh.name && mesh.name.toLowerCase().includes(excludeName)) {
+          shouldExclude = true;
+        }
+      });
+      if (!shouldExclude) {
+        meshesToHighlight.push(mesh);
+      }
+    });
+
+    // Dispatch highlight event
+    if (shouldHighlight) {
+      document.dispatchEvent(new CustomEvent('bp3d_highlight_changed', {
+        detail: {
+          objects: meshesToHighlight
+        }
+      }));
+    } else {
+      document.dispatchEvent(new CustomEvent('bp3d_highlight_changed', {
+        detail: {
+          objects: []
+        }
+      }));
+    }
+  }
+
+  /**
+   * Handle mouse over (extracted from bundle lines 2946-2948)
+   * Sets hover state and updates highlight
+   */
+  mouseOver() {
+    this.hover = true;
+    this.updateHighlight();
+  }
+
+  /**
+   * Handle mouse off (extracted from bundle lines 2951-2953)
+   * Clears hover state and updates highlight
+   */
+  mouseOff() {
+    this.hover = false;
+    this.updateHighlight();
+  }
+
+  /**
+   * Set item as selected (extracted from bundle lines 2956-2958)
+   * Sets selected state and updates highlight
+   */
+  setSelected() {
+    this.selected = true;
+    this.updateHighlight();
+  }
+
+  /**
+   * Set item as unselected (extracted from bundle lines 2961-2963)
+   * Clears selected state and updates highlight
+   */
+  setUnselected() {
+    this.selected = false;
+    this.updateHighlight();
+  }
+
+  /**
+   * Position Management System (extracted from bundle lines 2532-2536, 3014-3016)
+   */
+
+  /**
+   * Set item position (extracted from bundle lines 2532-2536)
+   * Updates position, dimension helper, child meshes, and linked items
+   * @param {THREE.Vector3} newPosition - New position
+   */
+  setPosition(newPosition) {
+    // Store old position to calculate delta
+    const oldPosition = new THREE.Vector3().copy(this.position);
+
+    // Update item position
+    this.position.copy(newPosition);
+
+    // Update dimension helper position
+    if (this.dimensionHelper) {
+      this.dimensionHelper.position.copy(newPosition);
+    }
+
+    // Calculate position delta
+    const delta = newPosition.clone().sub(oldPosition);
+
+    // Update child meshes
+    this.moveChildMeshes();
+
+    // Move linked items by the same delta
+    this.moveLinkedItems(delta);
+
+    // Notify system of change
+    this.changed();
+  }
+
+  /**
+   * Move linked items (extracted from bundle lines 2537-2540)
+   * Moves all linked items by the given delta
+   * @param {THREE.Vector3} delta - Position delta
+   */
+  moveLinkedItems(delta) {
+    this.linkedItems.forEach((item) => {
+      item.relativeMove(delta.x, delta.z);
+    });
+  }
+
+  /**
+   * Move to position (extracted from bundle lines 3014-3016)
+   * Validates position and calls setPosition
+   * @param {THREE.Vector3} position - Target position
+   * @param {Object} event - Optional event object
+   */
+  moveToPosition(position, event) {
+    // Check for NaN values
+    if (isNaN(position.x) || isNaN(position.y) || isNaN(position.z)) {
+      console.log('⚠️ NaN detected in moveToPosition');
+      return;
+    }
+
+    this.setPosition(position);
+    this.changed();
+  }
+
+  /**
+   * Click interaction handlers (extracted from bundle lines 2966-2973)
+   */
+
+  /**
+   * Handle click pressed (extracted from bundle lines 2966-2968)
+   * Stores drag offset for smooth dragging
+   * @param {Object} event - Event with point property
+   */
+  clickPressed(event) {
+    if (event && event.point) {
+      this.dragOffset.copy(event.point).sub(this.position);
+    }
+  }
+
+  /**
+   * Handle click dragged (extracted from bundle lines 2971-2973)
+   * Moves item to new position during drag
+   * @param {Object} event - Event with point property
+   */
+  clickDragged(event) {
+    if (event && event.point) {
+      this.moveToPosition(event.point, event);
+    }
+  }
+
+  /**
+   * Handle click released (no-op in base class)
+   * Can be overridden in subclasses
+   */
+  clickReleased() {
+    // No-op - can be overridden
+  }
+
+  /**
    * EXTRACTED FROM PRODUCTION BUNDLE (lines 2507-2520)
    * Flip item horizontally (mirror along Y axis)
    */
