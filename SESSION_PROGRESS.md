@@ -120,18 +120,49 @@
 
 ---
 
+### 7. **Camera Zoom Controls** (~30 lines)
+**File**: `Blueprint3D.jsx` (lines 1118-1140)
+
+**Features**:
+- `zoomIn()` method - Zoom camera closer using dollyIn(1.1)
+- `zoomOut()` method - Zoom camera farther using dollyOut(1.1)
+- Both methods call controls.update() after zoom
+- Console logging for camera distance feedback
+- Integration with ControlsSection zoom buttons (already wired in App.jsx)
+- Works with OrbitControls for smooth camera movement
+
+**Bundle Reference**: Lines 5311-5316
+
+---
+
+### 8. **Camera Center/Reset** (~30 lines)
+**File**: `Blueprint3D.jsx` (lines 1147-1175)
+
+**Features**:
+- `centerCamera()` - Centers camera on floorplan
+- `resetCamera` alias for App.jsx compatibility
+- Gets floorplan center point and size
+- Positions camera at optimal viewing angle (above and behind)
+- Sets OrbitControls target to floorplan center
+- Home button integration (already wired in ControlsSection)
+- Console logging for camera reset feedback
+
+**Bundle Reference**: Lines 4738-4744, 5317-5319
+
+---
+
 ## 📊 Progress Summary
 
 ### Current State
 - **ItemFactory.js**: 2,945 lines (+10 from flipHorizontal stub)
-- **Blueprint3D.jsx**: 2,015 lines (+21 from flip handler + lock checks)
+- **Blueprint3D.jsx**: 2,075 lines (+60 from zoom/center + flip + lock)
 - **DimensionHelper.js**: 356 lines (new)
-- **Total Application Code**: ~5,316 lines
+- **Total Application Code**: ~5,376 lines
 
 ### Build Metrics
-- **Previous Build**: 808.15 KB
-- **Current Build**: 819.51 KB
-- **Increase**: +11.36 KB (+1.4%)
+- **Starting Build**: 808.15 KB
+- **Current Build**: 820.18 KB
+- **Total Increase**: +12.03 KB (+1.5%)
 
 ### Lines Added This Session
 - RotationGizmo: ~150 lines
@@ -140,13 +171,15 @@
 - Item Duplication: ~45 lines
 - Item Flipping: ~20 lines
 - Lock Enforcement: ~15 lines
-- **Total**: ~680 lines of production-parity code
+- Camera Zoom Controls: ~30 lines
+- Camera Center/Reset: ~30 lines
+- **Total**: ~740 lines of production-parity code
 
 ### Overall Progress Toward 100% Parity
 Based on production bundle analysis:
 - **Production Bundle**: 23,773 lines
-- **Current Codebase**: ~5,316 lines (application code)
-- **Completion**: ~22.4% (up from ~18% at session start)
+- **Current Codebase**: ~5,376 lines (application code)
+- **Completion**: ~22.6% (up from ~18% at session start)
 
 ---
 
@@ -167,6 +200,8 @@ Based on production bundle analysis:
 - ✅ Ctrl+D/Cmd+D to duplicate items
 - ✅ F key to flip wall-mounted items
 - ✅ Lock button prevents drag/rotate
+- ✅ Zoom in/out buttons (+ and - icons)
+- ✅ Home button centers camera on floorplan
 
 ### Item Management
 - ✅ Dimension labels update with item size
@@ -232,14 +267,16 @@ The reverse-engineering continues methodically:
 
 ## 🎉 Session Achievements
 
-This session successfully extracted **6 major production features** totaling ~680 lines of code:
+This session successfully extracted **8 major production features** totaling ~740 lines of code:
 
 1. **Visual Polish**: Rotation gizmo and dimension helper provide professional visual feedback
 2. **User Experience**: Keyboard shortcuts (Delete, Escape, Ctrl+D, F) improve workflow efficiency
 3. **Item Manipulation**: Duplication and flipping add essential editing capabilities
 4. **Access Control**: Lock enforcement prevents accidental modifications to fixed items
-5. **Code Quality**: Clean extraction with proper integration and cleanup
-6. **Build Stability**: All features compile successfully with minimal size increase (+11.36 KB)
+5. **Camera Controls**: Zoom in/out and center/reset for optimal viewing
+6. **Navigation**: Full 3D camera control integration with existing UI buttons
+7. **Code Quality**: Clean extraction with proper integration and cleanup
+8. **Build Stability**: All features compile successfully with minimal size increase (+12.03 KB)
 
 The systematic extraction approach continues to work well, with each feature being:
 - Extracted from identified bundle locations
@@ -262,4 +299,4 @@ Continue systematic extraction focusing on:
 
 ---
 
-**Status**: ✅ Session successful. Build stable at 819.51 KB. Ready to continue systematic extraction toward 100% production parity.
+**Status**: ✅ Session successful. Build stable at 820.18 KB. Ready to continue systematic extraction toward 100% production parity.

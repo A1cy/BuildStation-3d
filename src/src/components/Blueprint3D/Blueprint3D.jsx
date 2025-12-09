@@ -1112,6 +1112,69 @@ class Blueprint3D extends Component {
   };
 
   /**
+   * **NEW: Zoom in 3D camera (from bundle lines 5314-5316)**
+   * Uses OrbitControls dollyIn method to zoom camera closer
+   */
+  zoomIn = () => {
+    if (!this.controls) return;
+
+    // Zoom in by factor of 1.1 (matches production)
+    this.controls.dollyIn(1.1);
+    this.controls.update();
+
+    console.log('🔎 Zoom in - Camera distance:', this.controls.getDistance());
+  };
+
+  /**
+   * **NEW: Zoom out 3D camera (from bundle lines 5311-5313)**
+   * Uses OrbitControls dollyOut method to zoom camera farther
+   */
+  zoomOut = () => {
+    if (!this.controls) return;
+
+    // Zoom out by factor of 1.1 (matches production)
+    this.controls.dollyOut(1.1);
+    this.controls.update();
+
+    console.log('🔎 Zoom out - Camera distance:', this.controls.getDistance());
+  };
+
+  /**
+   * **NEW: Center camera on floorplan (from bundle lines 4738-4744)**
+   * Resets camera view to default position centered on floorplan
+   * Bound to "Home" button in ControlsSection
+   */
+  centerCamera = () => {
+    if (!this.camera || !this.controls || !this.model) return;
+
+    // Get floorplan center point
+    const center = this.model.floorplan.getCenter();
+
+    // Calculate camera height (slightly above center)
+    const heightFactor = 1.5;
+    center.y = heightFactor;
+
+    // Set controls target to floorplan center
+    this.controls.target = center;
+
+    // Position camera at an angle (above and behind center)
+    const floorplanSize = this.model.floorplan.getSize();
+    const distance = 1.5 * floorplanSize.z;
+    const cameraPosition = center.clone().add(new THREE.Vector3(0, distance, distance));
+
+    this.camera.position.copy(cameraPosition);
+    this.controls.update();
+
+    console.log('🏠 Camera centered on floorplan');
+  };
+
+  /**
+   * **NEW: Alias for centerCamera (for App.jsx compatibility)**
+   * App.jsx calls resetCamera(), so provide this alias
+   */
+  resetCamera = this.centerCamera;
+
+  /**
    * PHASE 2B Priority 2: Handle mouse down in 3D view (start drag or select)
    * Extracted from production bundle function H (mousedown handler) lines 4100-4150
    */
