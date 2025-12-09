@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import DimensionHelper from './DimensionHelper';
 
 /**
  * ItemFactory - Factory for creating 3D furniture items
@@ -364,18 +365,12 @@ class BaseItem extends THREE.Group {
    * Creates visual dimension helper for measurements
    */
   configDimensionLabels() {
-    // For now, create a simple placeholder
-    // TODO: Implement full DimensionHelper class
-    this.dimensionHelper = {
-      position: new THREE.Vector3(),
-      rotation: new THREE.Euler(),
-      update: () => {},
-      setRotation: (y) => {
-        if (this.dimensionHelper) {
-          this.dimensionHelper.rotation.y = y;
-        }
-      }
-    };
+    // Create DimensionHelper - wireframe bounding box with dimension labels
+    // (extracted from production bundle lines 2055-2203)
+    this.dimensionHelper = new DimensionHelper(this.scene, this);
+
+    // Add to scene
+    this.scene.add(this.dimensionHelper);
   }
 
   /**
