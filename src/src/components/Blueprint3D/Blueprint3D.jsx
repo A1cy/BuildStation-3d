@@ -7,7 +7,7 @@ import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 import { Model, Canvas2D, MODES } from '../../core/Blueprint3D';
-import Configuration, { configDimensionVisible, BP3D_EVENT_CONFIG_CHANGED } from '../../core/Configuration';
+import Configuration, { configDimensionVisible, configSceneLocked, configSnapMode, BP3D_EVENT_CONFIG_CHANGED } from '../../core/Configuration';
 import Dimensioning from '../../core/Dimensioning';
 import FloorPlanView from '../FloorPlanner/FloorPlanView';
 import './Blueprint3D.css';
@@ -62,6 +62,22 @@ class Blueprint3D extends Component {
     // **PHASE 2B Priority 3: Visual Feedback State**
     this.currentCursor = 'default';  // Current cursor style
 
+    // **Feature #13: Mouse Interaction State Machine** (extracted from bundle lines 4100-4230)
+    // State constants (bundle lines 4103-4108)
+    this.STATE_UNSELECTED = 0;        // No item selected
+    this.STATE_SELECTED = 1;          // Item selected but not being manipulated
+    this.STATE_DRAGGING = 2;          // Item being dragged
+    this.STATE_ROTATING = 3;          // Rotation gizmo being used
+    this.STATE_ROTATING_ITEM = 4;     // Item rotation in progress
+    this.interactionState = this.STATE_UNSELECTED;  // Current state (f in bundle)
+
+    // State tracking variables (bundle lines 4100-4102)
+    this.mouseDown = false;           // Mouse button is pressed (c in bundle)
+    this.mouseMoved = false;          // Mouse has moved (h in bundle)
+    this.rotationGizmoHover = false;  // Hovering over rotation gizmo (y in bundle)
+    this.hoveredObject = null;        // Object under cursor (d in bundle)
+    this.lastHoveredObject = null;    // Last hovered object for mouseOver/mouseOff (b in bundle)
+
     // **PHASE 2D: Post-Processing Effects**
     this.composer = null;  // EffectComposer for post-processing
     this.outlinePass = null;  // OutlinePass for selection highlighting
@@ -101,6 +117,10 @@ class Blueprint3D extends Component {
    */
   initBlueprint3D = () => {
     console.log('Initializing Blueprint3D...');
+
+    // **Feature #14: Load Configuration from localStorage** (bundle initialization)
+    Configuration.load();
+    console.log('✅ Configuration loaded from localStorage');
 
     // Create Blueprint3D Model
     this.model = new Model('/Blueprint3D-assets');
@@ -538,43 +558,27 @@ class Blueprint3D extends Component {
       wallMesh.castShadow = true;
       wallMesh.receiveShadow = true;
 
+      // **FEATURE #17: Add black edge indicators (from production bundle)**
+      // Create edges geometry for black outline effect
+      const edgesGeometry = new THREE.EdgesGeometry(wallGeometry);
+      const edgesMaterial = new THREE.LineBasicMaterial({
+        color: 0x000000,      // Black edges
+        linewidth: 2          // Thicker lines
+      });
+      const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+      edges.renderOrder = 1; // Render on top of walls
+      wallMesh.add(edges); // Add edges as child of wall mesh
+
       this.floorPlanGroup.add(wallMesh);
     });
 
-    // Create floor meshes for rooms
-    // PRODUCTION QUALITY: Lighter, smoother floor
-    const floorMaterial = new THREE.MeshStandardMaterial({
-      color: 0xe0e0e0,  // Lighter gray (brighter than 0xcccccc)
-      roughness: 0.6,   // Smoother finish
-      metalness: 0.1,   // Less metallic
-      envMapIntensity: 0.3
-    });
-
+    // **FEATURE #16: Use textured floor planes from Room.generatePlane()**
+    // Instead of creating plain gray floors, use the textured floor planes
     this.model.floorplan.rooms.forEach((room) => {
-      // Get room corners
-      const corners = room.corners;
-      if (corners.length < 3) return; // Need at least 3 corners for a polygon
-
-      // Create floor shape from corners
-      const shape = new THREE.Shape();
-      shape.moveTo(corners[0].x, corners[0].y);
-      for (let i = 1; i < corners.length; i++) {
-        shape.lineTo(corners[i].x, corners[i].y);
+      if (room.floorPlane) {
+        this.floorPlanGroup.add(room.floorPlane);
+        console.log('✅ Added textured floor plane for room');
       }
-      shape.lineTo(corners[0].x, corners[0].y); // Close the shape
-
-      // Extrude shape to create floor mesh
-      const floorGeometry = new THREE.ShapeGeometry(shape);
-      const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
-
-      // Position floor (rotate to horizontal plane)
-      floorMesh.rotation.x = -Math.PI / 2;
-      floorMesh.position.y = 0.01; // Slightly above ground plane to prevent z-fighting
-
-      // Enable shadows
-      floorMesh.receiveShadow = true;
-
-      this.floorPlanGroup.add(floorMesh);
     });
 
     // Add floor plan group to scene
@@ -1207,6 +1211,351 @@ class Blueprint3D extends Component {
   };
 
   /**
+   * Raycasting System (extracted from bundle lines 4232-4274)
+   */
+
+  /**
+   * Convert mouse coordinates to 3D world position (extracted from bundle lines 4232-4240)
+   * @param {Object} mouseCoords - Mouse coordinates {x, y} in pixel space
+   * @returns {THREE.Vector3} 3D world position
+   */
+  projectVector = (mouseCoords) => {
+    if (!this.camera || !this.canvas) return new THREE.Vector3();
+
+    // Get canvas bounding rectangle
+    const rect = this.canvas.getBoundingClientRect();
+
+    // Convert to normalized device coordinates (-1 to +1)
+    const normalizedCoords = new THREE.Vector2();
+    normalizedCoords.x = (mouseCoords.x / rect.width) * 2 - 1;
+    normalizedCoords.y = -(mouseCoords.y / rect.height) * 2 + 1;
+
+    // Create vector at z=0.5 (middle of view frustum)
+    const vector = new THREE.Vector3(normalizedCoords.x, normalizedCoords.y, 0.5);
+
+    // Unproject from camera to get world position
+    vector.unproject(this.camera);
+
+    return vector;
+  };
+
+  /**
+   * Advanced raycasting with filtering options (extracted from bundle lines 4253-4274)
+   * @param {Object} mouseCoords - Mouse coordinates {x, y}
+   * @param {Object|Array} targets - Target objects or array of objects to raycast against
+   * @param {boolean} backfaceCulling - Filter backfaces (default: false)
+   * @param {boolean} visibilityFilter - Filter invisible objects (default: false)
+   * @param {boolean} recursive - Recursively check children (default: false)
+   * @param {number} threshold - Line intersection threshold (default: 0.2)
+   * @returns {Array} Array of intersection results
+   */
+  getIntersections = (mouseCoords, targets, backfaceCulling = false, visibilityFilter = false, recursive = false, threshold = 0.2) => {
+    if (!this.camera || !mouseCoords) return [];
+
+    // Project mouse to 3D world position
+    const worldPos = this.projectVector(mouseCoords);
+
+    // Calculate ray direction
+    const direction = worldPos.clone().sub(this.camera.position).normalize();
+
+    // Create raycaster
+    const raycaster = new THREE.Raycaster(this.camera.position, direction);
+    raycaster.params.Line.threshold = threshold;
+
+    let intersections = [];
+
+    if (Array.isArray(targets)) {
+      // Multiple targets - collect all meshes
+      const meshes = [];
+      targets.forEach((target) => {
+        target.traverse((child) => {
+          if (child.isMesh) {
+            meshes.push(child);
+          }
+        });
+      });
+
+      // Perform raycasting
+      intersections = raycaster.intersectObjects(meshes, recursive);
+
+      // Post-process intersections to get parent items
+      intersections.forEach((intersection) => {
+        if (intersection.object.isMesh && intersection.object.parent) {
+          // Skip Scene objects
+          if (intersection.object.parent instanceof THREE.Scene) return;
+
+          // Use parent as the intersected object
+          if (intersection.object.parent) {
+            intersection.object = intersection.object.parent;
+          }
+
+          // Handle group parents (sets with opened=false)
+          if (intersection.object.groupParent && intersection.object.groupParent.opened === false) {
+            intersection.object = intersection.object.groupParent;
+          }
+        }
+      });
+    } else {
+      // Single target
+      intersections = raycaster.intersectObject(targets, recursive);
+    }
+
+    // Apply visibility filter
+    if (visibilityFilter) {
+      intersections = intersections.filter((intersection) => intersection.object.visible);
+    }
+
+    // Apply backface culling (remove faces pointing away from camera)
+    if (backfaceCulling) {
+      intersections = intersections.filter((intersection) => {
+        if (intersection.face) {
+          return intersection.face.normal.dot(direction) <= 0;
+        }
+        return true;
+      });
+    }
+
+    return intersections;
+  };
+
+  /**
+   * Get intersection with specific item (extracted from bundle lines 4249-4252)
+   * Uses custom intersection planes if available, otherwise uses ground plane
+   * @param {Object} mouseCoords - Mouse coordinates {x, y}
+   * @param {Object} item - Item to raycast against
+   * @returns {Object|null} Intersection result or null
+   */
+  itemIntersection = (mouseCoords, item) => {
+    if (!item) return null;
+
+    // Check if item has custom intersection planes
+    const customPlanes = item.customIntersectionPlanes ? item.customIntersectionPlanes() : null;
+
+    let intersections;
+    if (customPlanes && customPlanes.length > 0) {
+      // Use custom planes
+      intersections = this.getIntersections(mouseCoords, customPlanes, true);
+    } else {
+      // Use ground plane (stored in this.groundPlane)
+      intersections = this.getIntersections(mouseCoords, this.groundPlane || [], false);
+    }
+
+    return intersections.length > 0 ? intersections[0] : null;
+  };
+
+  /**
+   * **Feature #13: State Machine - Transition to new state** (extracted from bundle lines 4205-4230)
+   * Function B(t) in production bundle
+   * Handles cursor style updates and OrbitControls enable/disable on state transitions
+   * @param {number} newState - New state to transition to
+   */
+  transitionState = (newState) => {
+    if (newState === this.interactionState) return;
+
+    console.log(`🔄 State transition: ${this.getStateName(this.interactionState)} → ${this.getStateName(newState)}`);
+
+    // Exit actions for current state
+    switch (this.interactionState) {
+      case this.STATE_UNSELECTED:
+      case this.STATE_SELECTED:
+        break;
+      case this.STATE_DRAGGING:
+        // Restore cursor from dragging
+        if (this.lastHoveredObject) {
+          this.setCursorStyle('pointer');
+        } else {
+          this.setCursorStyle('auto');
+        }
+        break;
+      default:
+        break;
+    }
+
+    // Entry actions for new state
+    switch (newState) {
+      case this.STATE_UNSELECTED:
+        this.setSelectedObject(null);
+        break;
+      case this.STATE_SELECTED:
+        if (this.controls) this.controls.enabled = true;
+        break;
+      case this.STATE_ROTATING:
+      case this.STATE_ROTATING_ITEM:
+        if (this.controls) this.controls.enabled = false;
+        break;
+      case this.STATE_DRAGGING:
+        this.setCursorStyle('move');
+        if (this.controls) this.controls.enabled = false;
+        break;
+      default:
+        break;
+    }
+
+    this.interactionState = newState;
+
+    // Update rotation gizmo state
+    if (this.rotationGizmo) {
+      const isRotating = this.isRotating();
+      // Notify rotation gizmo of rotating state change
+      console.log(`🔄 Rotation state: ${isRotating}`);
+    }
+  };
+
+  /**
+   * **Feature #13: Get human-readable state name**
+   * Helper for logging
+   * @param {number} state - State constant
+   * @returns {string} State name
+   */
+  getStateName = (state) => {
+    switch (state) {
+      case this.STATE_UNSELECTED: return 'UNSELECTED';
+      case this.STATE_SELECTED: return 'SELECTED';
+      case this.STATE_DRAGGING: return 'DRAGGING';
+      case this.STATE_ROTATING: return 'ROTATING';
+      case this.STATE_ROTATING_ITEM: return 'ROTATING_ITEM';
+      default: return 'UNKNOWN';
+    }
+  };
+
+  /**
+   * **Feature #13: Check if currently rotating** (extracted from bundle lines 4245-4247)
+   * @returns {boolean} True if in rotating state
+   */
+  isRotating = () => {
+    return this.interactionState === this.STATE_ROTATING ||
+           this.interactionState === this.STATE_ROTATING_ITEM;
+  };
+
+  /**
+   * **Feature #13: Update hover state** (extracted from bundle lines 4242-4244)
+   * Function O() in production bundle
+   * Manages mouseOver/mouseOff calls and cursor style for hovered objects
+   */
+  updateHoverState = () => {
+    if (this.hoveredObject != null) {
+      // Something is hovered
+      if (this.lastHoveredObject != null) {
+        // Already had something hovered
+        if (this.lastHoveredObject !== this.hoveredObject) {
+          // Different object - call mouseOff on old, mouseOver on new
+          if (this.lastHoveredObject.mouseOff) {
+            this.lastHoveredObject.mouseOff();
+          }
+          this.lastHoveredObject = this.hoveredObject;
+          if (this.hoveredObject.mouseOver) {
+            this.hoveredObject.mouseOver();
+          }
+          this.setCursorStyle('pointer');
+          console.log('🖱️ Hover changed to:', this.hoveredObject.metadata?.itemName);
+        }
+      } else {
+        // First time hovering - call mouseOver
+        this.lastHoveredObject = this.hoveredObject;
+        if (this.hoveredObject.mouseOver) {
+          this.hoveredObject.mouseOver();
+        }
+        this.setCursorStyle('pointer');
+        console.log('🖱️ Hover started:', this.hoveredObject.metadata?.itemName);
+      }
+    } else {
+      // Nothing hovered
+      if (this.lastHoveredObject != null) {
+        // Was hovering something - call mouseOff
+        if (this.lastHoveredObject.mouseOff) {
+          this.lastHoveredObject.mouseOff();
+        }
+        this.setCursorStyle('auto');
+        this.lastHoveredObject = null;
+        console.log('🖱️ Hover ended');
+      }
+    }
+  };
+
+  /**
+   * **Feature #13: Set cursor style** (extracted from bundle lines 4212, 4227)
+   * Updates canvas cursor style if changed
+   * @param {string} style - Cursor style ('auto', 'pointer', 'move', etc.)
+   */
+  setCursorStyle = (style) => {
+    if (this.currentCursor !== style && this.renderer) {
+      this.currentCursor = style;
+      this.renderer.domElement.style.cursor = style;
+    }
+  };
+
+  /**
+   * **Feature #13: Set selected object** (extracted from bundle lines 4275-4286)
+   * Manages item selection with multi-select support (Ctrl+Click)
+   * @param {Object|null} item - Item to select (null to deselect all)
+   * @param {boolean} ctrlKey - If true, add to selection as linked item
+   */
+  setSelectedObject = (item, ctrlKey = false) => {
+    // Transition to SELECTED state if currently UNSELECTED
+    if (this.interactionState === this.STATE_UNSELECTED && item !== null) {
+      this.transitionState(this.STATE_SELECTED);
+    }
+
+    if (item != null) {
+      // Selecting an item
+      if (item === this.selectedItem) {
+        // Same item - no-op
+        return;
+      }
+
+      if (ctrlKey && this.selectedItem) {
+        // Ctrl+Click - add to selection as linked item
+        console.log('🔗 Adding linked item:', item.metadata?.itemName);
+        if (this.selectedItem.addLinkedItem) {
+          this.selectedItem.addLinkedItem(item);
+        }
+      } else {
+        // Normal click - select new item
+        if (this.selectedItem) {
+          // Deselect current item
+          if (this.selectedItem.setUnselected) {
+            this.selectedItem.setUnselected();
+          }
+          if (this.selectedItem.clearLinkedItems) {
+            this.selectedItem.clearLinkedItems();
+          }
+        }
+
+        // Select new item
+        this.selectedItem = item;
+        if (item.setSelected) {
+          item.setSelected();
+        }
+
+        console.log('✅ Selected item:', item.metadata?.itemName);
+
+        // Call item selected callbacks
+        if (this.props.onItemSelected) {
+          this.props.onItemSelected(item);
+        }
+      }
+    } else {
+      // Deselecting all
+      if (this.selectedItem) {
+        if (this.selectedItem.setUnselected) {
+          this.selectedItem.setUnselected();
+        }
+        if (this.selectedItem.clearLinkedItems) {
+          this.selectedItem.clearLinkedItems();
+        }
+        this.selectedItem = null;
+
+        console.log('❌ Deselected all items');
+
+        // Call item unselected callbacks
+        if (this.props.onItemUnselected) {
+          this.props.onItemUnselected();
+        }
+      }
+    }
+  };
+
+  /**
    * **NEW: Show dimension helpers for all items (from bundle lines 4758-4765)**
    * Iterates through all items and calls showDimensionHelper()
    */
@@ -1246,62 +1595,125 @@ class Blueprint3D extends Component {
    * PHASE 2B Priority 2: Handle mouse down in 3D view (start drag or select)
    * Extracted from production bundle function H (mousedown handler) lines 4100-4150
    */
+  /**
+   * **Feature #13: Handle mouse down in 3D view** (extracted from bundle lines 4179-4193)
+   * Function H(e) in production bundle
+   * Handles item selection, drag start, and rotation start
+   */
   handle3DMouseDown = (event) => {
     if (this.props.viewMode !== '3d') return;
 
-    // Disable OrbitControls while dragging to prevent camera movement
-    if (this.controls) {
-      this.controls.enabled = false;
+    // **Feature #14: Check scene locking** (bundle line 4180)
+    if (Configuration.getBooleanValue(configSceneLocked)) return;
+
+    // Prevent default
+    event.preventDefault();
+
+    // Set flags
+    this.mouseMoved = false;
+    this.mouseDown = true;
+
+    // Switch on current state (bundle lines 4180-4192)
+    switch (this.interactionState) {
+      case this.STATE_SELECTED:
+        // Check if clicking rotation gizmo
+        if (this.rotationGizmoHover) {
+          // Start rotating
+          this.transitionState(this.STATE_ROTATING);
+        } else if (this.hoveredObject != null) {
+          // Clicking item - select it (or add to selection with Ctrl)
+          this.setSelectedObject(this.hoveredObject, event.ctrlKey);
+
+          // Start drag if not fixed
+          if (!this.hoveredObject.fixed) {
+            this.transitionState(this.STATE_DRAGGING);
+          }
+        } else if (this.hoveredObject === null && !this.mouseMoved) {
+          // Clicking empty space - deselect
+          this.transitionState(this.STATE_UNSELECTED);
+          // Call wall/floor/nothing clicked callbacks (T function in bundle)
+          this.handleEmptySpaceClick(event);
+        }
+        break;
+
+      case this.STATE_UNSELECTED:
+        // Check if clicking item
+        if (this.hoveredObject != null) {
+          // Select item
+          this.setSelectedObject(this.hoveredObject, event.ctrlKey);
+
+          // Start drag if not fixed
+          if (!this.hoveredObject.fixed) {
+            this.transitionState(this.STATE_DRAGGING);
+          }
+        }
+
+        // Handle empty space click
+        if (!this.mouseMoved) {
+          this.handleEmptySpaceClick(event);
+        }
+        break;
+
+      case this.STATE_DRAGGING:
+      case this.STATE_ROTATING:
+        // No-op (should not happen)
+        break;
+
+      case this.STATE_ROTATING_ITEM:
+        // Exit rotating
+        this.transitionState(this.STATE_SELECTED);
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  /**
+   * **Feature #13: Handle empty space click** (extracted from bundle lines 4129-4151)
+   * Function T(a) in production bundle
+   * Fires wall/floor/nothing clicked callbacks
+   * @param {MouseEvent} event - Mouse event
+   */
+  handleEmptySpaceClick = (event) => {
+    if (this.interactionState !== this.STATE_UNSELECTED) return;
+
+    const mouseCoords = { x: event.offsetX, y: event.offsetY };
+
+    // Check for wall edge click
+    if (this.model.floorplan && this.model.floorplan.wallEdgePlanes) {
+      const wallPlanes = this.model.floorplan.wallEdgePlanes();
+      const wallIntersections = this.getIntersections(mouseCoords, wallPlanes, true);
+      if (wallIntersections.length > 0) {
+        const edge = wallIntersections[0].object.edge;
+        console.log('🧱 Wall clicked:', edge);
+        // Call wallClicked callbacks
+        if (this.props.onWallClicked) {
+          this.props.onWallClicked(edge, event.offsetX, event.offsetY);
+        }
+        return;
+      }
     }
 
-    // Update mouse position
-    this.updateMousePosition(event);
-
-    // **NEW: Initialize last mouse position for rotation tracking**
-    this.lastMouseX = event.clientX;
-    this.lastMouseY = event.clientY;
-
-    // Raycast to find item under cursor
-    const clickedItem = this.getItemAtMouse();
-
-    if (clickedItem) {
-      // Item clicked - select and start drag
-      console.log('🖱️ Item mousedown:', clickedItem);
-
-      // Select item if not already selected
-      if (this.selectedItem !== clickedItem) {
-        this.selectItem(clickedItem);
+    // Check for floor click
+    if (this.model.floorplan && this.model.floorplan.floorPlanes) {
+      const floorPlanes = this.model.floorplan.floorPlanes();
+      const floorIntersections = this.getIntersections(mouseCoords, floorPlanes, false);
+      if (floorIntersections.length > 0) {
+        const room = floorIntersections[0].object.room;
+        console.log('🏠 Floor clicked:', room);
+        // Call floorClicked callbacks
+        if (this.props.onFloorClicked) {
+          this.props.onFloorClicked(room, event.offsetX, event.offsetY);
+        }
+        return;
       }
+    }
 
-      // Start drag operation (only if item is not fixed/locked)
-      if (!clickedItem.fixed) {
-        this.isDragging = true;
-        this.dragStartPosition = clickedItem.position.clone();
-      } else {
-        console.log('🔒 Item is locked, cannot drag');
-      }
-
-      // Calculate drag offset (distance from item center to click point)
-      const intersectPoint = this.getIntersectionPoint();
-      if (intersectPoint) {
-        this.dragOffset = new THREE.Vector3().subVectors(
-          clickedItem.position,
-          intersectPoint
-        );
-      } else {
-        this.dragOffset = new THREE.Vector3(0, 0, 0);
-      }
-
-      console.log('🎯 Drag started at:', this.dragStartPosition);
-    } else {
-      // Empty space clicked - deselect all
-      console.log('🖱️ Empty space clicked - deselecting');
-      this.deselectAllItems();
-
-      // Re-enable OrbitControls for camera movement
-      if (this.controls) {
-        this.controls.enabled = true;
-      }
+    // Nothing clicked
+    console.log('⬜ Empty space clicked');
+    if (this.props.onNothingClicked) {
+      this.props.onNothingClicked();
     }
   };
 
@@ -1452,104 +1864,101 @@ class Blueprint3D extends Component {
    * **ENHANCED Phase 2B Priority 3: Added hover detection and cursor changes**
    * Extracted from production bundle function S (mousemove handler) lines 4150-4200
    */
+  /**
+   * **Feature #13: Handle mouse move in 3D view** (extracted from bundle lines 4153-4177)
+   * Function S(e) in production bundle
+   * Updates hover state, handles drag and rotate operations
+   */
   handle3DMouseMove = (event) => {
     if (this.props.viewMode !== '3d') return;
+
+    // **Feature #14: Check scene locking** (bundle line 4154)
+    if (Configuration.getBooleanValue(configSceneLocked)) return;
+
+    // Prevent default behavior
+    event.preventDefault();
+
+    // Set mouseMoved flag
+    this.mouseMoved = true;
 
     // Update mouse position
     this.updateMousePosition(event);
 
-    // **NEW: Rotation support with middle mouse button (from bundle lines 4969-4972)**
-    // If middle mouse button (button 4) is held and item is selected, rotate instead of move
-    if (this.isDragging && this.selectedItem && event.buttons === 4) {
-      // Check if item is locked
-      if (this.selectedItem.fixed) {
-        console.log('🔒 Item is locked, cannot rotate');
-        return;
+    // **Update hover state if not dragging** (bundle lines 4154-4163)
+    if (!this.mouseDown) {
+      // Check rotation gizmo hover (production checks i.getObject())
+      if (this.rotationGizmo && this.rotationGizmo.getObject) {
+        const gizmoObject = this.rotationGizmo.getObject();
+        if (gizmoObject != null) {
+          // Check if hovering over rotation gizmo
+          const mouseCoords = { x: event.offsetX, y: event.offsetY };
+          const gizmoIntersections = this.getIntersections(mouseCoords, gizmoObject, false, false, true);
+          if (gizmoIntersections.length > 0) {
+            // Hovering over rotation gizmo
+            this.rotationGizmoHover = true;
+            if (this.rotationGizmo.setMouseover) {
+              this.rotationGizmo.setMouseover(true);
+            }
+            this.hoveredObject = null;
+            // Exit early - don't check items
+            return;
+          }
+        }
       }
 
-      // Middle mouse button - rotate item
-      const deltaX = event.clientX - this.lastMouseX;
-      const currentRotation = this.selectedItem.rotation.y;
-      const newRotation = currentRotation + (0.05 * deltaX); // 0.05 = rotation sensitivity
-
-      // Call item's rotate method (matches production behavior)
-      this.selectedItem.rotate({}, newRotation);
-
-      // **NEW: Update gizmo during rotation (from bundle lines 4088-4093)**
-      if (this.rotationGizmo) {
-        this.rotationGizmo.setRotating(true);
-        this.rotationGizmo.update();
+      // Not hovering rotation gizmo
+      this.rotationGizmoHover = false;
+      if (this.rotationGizmo && this.rotationGizmo.setMouseover) {
+        this.rotationGizmo.setMouseover(false);
       }
 
-      console.log('🔄 Rotating to:', newRotation);
-
-      // Store last mouse position for next frame
-      this.lastMouseX = event.clientX;
-      this.lastMouseY = event.clientY;
-      return;
+      // Check for hovered items
+      const items = this.model.scene.getItems();
+      const mouseCoords = { x: event.offsetX, y: event.offsetY };
+      const intersections = this.getIntersections(mouseCoords, items, false, true);
+      this.hoveredObject = intersections.length > 0 ? intersections[0].object : null;
     }
 
-    // If dragging, move the selected item (left mouse button = 1)
-    if (this.isDragging && this.selectedItem && event.buttons === 1) {
-      // Check if item is locked (defensive check - should be prevented in mousedown)
-      if (this.selectedItem.fixed) {
-        console.log('🔒 Item is locked, cannot drag');
-        return;
-      }
+    // **Handle state-based mouse move** (bundle lines 4163-4176)
+    switch (this.interactionState) {
+      case this.STATE_UNSELECTED:
+      case this.STATE_SELECTED:
+        // Update hover state (calls mouseOver/mouseOff)
+        this.updateHoverState();
+        break;
 
-      // Set grabbing cursor
-      this.setCursor('grabbing');
+      case this.STATE_DRAGGING:
+      case this.STATE_ROTATING:
+      case this.STATE_ROTATING_ITEM:
+        // Handle drag or rotate
+        if (this.selectedItem) {
+          const mouseCoords = { x: event.offsetX, y: event.offsetY };
+          const intersection = this.itemIntersection(mouseCoords, this.selectedItem);
 
-      // Get intersection point with drag plane
-      const intersectPoint = this.getIntersectionPoint();
+          if (intersection) {
+            if (this.isRotating()) {
+              // Rotating mode
+              if (!this.selectedItem.fixed) {
+                // Call item's rotate method with intersection point
+                this.selectedItem.rotate(intersection);
+              }
+            } else {
+              // Dragging mode - use clickDragged from ItemFactory
+              if (!this.selectedItem.fixed && this.selectedItem.clickDragged) {
+                this.selectedItem.clickDragged(intersection);
+              }
+            }
+          }
 
-      if (intersectPoint) {
-        // Apply drag offset to maintain click position relative to item center
-        const newPosition = new THREE.Vector3().addVectors(
-          intersectPoint,
-          this.dragOffset
-        );
-
-        // Move item to new position
-        this.selectedItem.moveToPosition(newPosition);
-
-        // **NEW: Update gizmo position during drag**
-        if (this.rotationGizmo) {
-          this.rotationGizmo.update();
+          // Update gizmo during drag/rotate
+          if (this.rotationGizmo) {
+            this.rotationGizmo.update();
+          }
         }
+        break;
 
-        // console.log('🎯 Dragging to:', newPosition);
-      }
-
-      // Store last mouse position for rotation tracking
-      this.lastMouseX = event.clientX;
-      this.lastMouseY = event.clientY;
-    } else {
-      // **Phase 2B Priority 3: Hover detection**
-      const hoveredItem = this.getItemAtMouse();
-
-      if (hoveredItem !== this.hoveredItem) {
-        // Hover state changed
-        if (this.hoveredItem && this.hoveredItem !== this.selectedItem) {
-          // Clear previous hover
-          this.hoveredItem.hover = false;
-          this.hoveredItem.updateHighlight();
-        }
-
-        this.hoveredItem = hoveredItem;
-
-        if (this.hoveredItem) {
-          // Set new hover
-          this.hoveredItem.hover = true;
-          this.hoveredItem.updateHighlight();
-
-          // Set grab cursor on hover
-          this.setCursor('grab');
-        } else {
-          // No hover - default cursor
-          this.setCursor('default');
-        }
-      }
+      default:
+        break;
     }
   };
 
@@ -1559,34 +1968,47 @@ class Blueprint3D extends Component {
    * **ENHANCED Phase 2B Priority 3: Added cursor reset**
    * Extracted from production bundle function C (mouseup handler) lines 4200-4250
    */
+  /**
+   * **Feature #13: Handle mouse up in 3D view** (extracted from bundle lines 4195-4203)
+   * Function C(e) in production bundle
+   * Ends drag/rotate operations and transitions state
+   */
   handle3DMouseUp = (event) => {
     if (this.props.viewMode !== '3d') return;
 
-    // End drag operation
-    if (this.isDragging && this.selectedItem) {
-      this.isDragging = false;
+    // **Feature #14: Check scene locking** (bundle line 4196)
+    if (Configuration.getBooleanValue(configSceneLocked)) return;
 
-      // **Phase 2A Priority 2: Apply snap-to-grid**
-      const position = this.selectedItem.position.clone();
-      this.selectedItem.getSnapPosition(position);
+    // Clear mouseDown flag
+    this.mouseDown = false;
 
-      // Move to snapped position (includes collision check)
-      this.selectedItem.moveToPosition(position);
+    // Switch on current state (bundle lines 4196-4202)
+    switch (this.interactionState) {
+      case this.STATE_DRAGGING:
+        // End drag - call clickReleased
+        if (this.selectedItem && this.selectedItem.clickReleased) {
+          this.selectedItem.clickReleased();
+        }
+        // Transition to SELECTED
+        this.transitionState(this.STATE_SELECTED);
+        console.log('🎯 Drag ended');
+        break;
 
-      // **NEW: Reset rotating state after rotation ends**
-      if (this.rotationGizmo) {
-        this.rotationGizmo.setRotating(false);
-      }
+      case this.STATE_ROTATING:
+        // End rotation
+        if (this.mouseMoved) {
+          // Was actively rotating - transition to SELECTED
+          this.transitionState(this.STATE_SELECTED);
+        } else {
+          // Just clicked rotation gizmo - transition to ROTATING_ITEM
+          this.transitionState(this.STATE_ROTATING_ITEM);
+        }
+        console.log('🔄 Rotation ended');
+        break;
 
-      console.log('🎯 Drag ended at:', this.selectedItem.position);
-
-      // **Phase 2B Priority 3: Reset cursor to grab (still hovering item)**
-      this.setCursor('grab');
-    }
-
-    // Re-enable OrbitControls
-    if (this.controls) {
-      this.controls.enabled = true;
+      default:
+        // No-op for other states
+        break;
     }
   };
 

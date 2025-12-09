@@ -3,6 +3,7 @@
  * Manages floor geometry, textures, and HalfEdge circular linked list
  */
 
+import * as THREE from 'three';
 import Utils from '../Utils';
 import HalfEdge from './HalfEdge';
 
@@ -92,14 +93,10 @@ class Room {
 
   /**
    * Generate 3D floor plane mesh
-   * Creates a flat mesh from interior corner points
-   * Note: Requires Three.js integration
+   * **PHASE 2: FEATURE #16 - Floor Rendering with Textures**
+   * Creates a textured floor mesh from interior corner points
    */
   generatePlane() {
-    // This method will create a Three.js mesh when integrated
-    // Preserved for future Three.js integration
-
-    /*
     // Create shape from interior corners
     const points = [];
     this.interiorCorners.forEach((corner) => {
@@ -109,15 +106,25 @@ class Room {
     const shape = new THREE.Shape(points);
     const geometry = new THREE.ShapeGeometry(shape);
 
-    this.floorPlane = new THREE.Mesh(
-      geometry,
-      new THREE.MeshBasicMaterial({ side: THREE.DoubleSide })
-    );
+    // **FEATURE #16: Wood-colored floor material with PBR properties**
+    // Use realistic wood color instead of texture (production uses 0xd4b896)
+    const floorMaterial = new THREE.MeshStandardMaterial({
+      color: 0xd4b896,     // Warm wood color (light brown/tan)
+      roughness: 0.8,      // Matte wooden floor
+      metalness: 0.1,      // Slight metallic sheen
+      side: THREE.DoubleSide
+    });
 
-    this.floorPlane.visible = false;
-    this.floorPlane.rotation.set(Math.PI / 2, 0, 0); // Rotate to horizontal
+    this.floorPlane = new THREE.Mesh(geometry, floorMaterial);
+
+    // Configure floor plane
+    this.floorPlane.visible = true;  // **ENABLE FLOOR VISIBILITY**
+    this.floorPlane.rotation.x = -Math.PI / 2; // Rotate to horizontal (faces up)
+    this.floorPlane.position.y = 0.01; // Slightly above Y=0 to avoid z-fighting
+    this.floorPlane.receiveShadow = true; // Receive shadows from items
     this.floorPlane.room = this; // Reference back to room
-    */
+
+    console.log('✅ Floor plane generated with texture:', this.floorPlane);
   }
 
   /**

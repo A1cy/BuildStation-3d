@@ -16,7 +16,7 @@ class FloorPlanView extends Component {
         style={{
           width: '100%',
           height: '100%',
-          display: 'block',
+          display: hidden ? 'none' : 'block',  // **FIX: Actually hide when in 3D mode**
           position: 'absolute',
           top: 0,
           left: 0,

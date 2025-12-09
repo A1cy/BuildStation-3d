@@ -898,9 +898,10 @@ class BaseItem extends THREE.Group {
       return 'outofbounds';
     }
 
-    // If inside room, apply snap-to-grid if enabled
-    const Configuration = require('./Configuration').default;
-    if (Configuration.getBooleanValue('snap')) {
+    // If inside room, apply snap-to-grid if enabled (bundle line 3191)
+    const Configuration = require('../Configuration').default;
+    const { configSnapMode } = require('../Configuration');
+    if (Configuration.getBooleanValue(configSnapMode)) {
       this.getSnapPosition(position);
     }
 

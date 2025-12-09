@@ -1,0 +1,87 @@
+{
+  "production": {
+    "empty-canvas": [
+      {
+        "name": "initial",
+        "path": "visual-comparison/prod-empty-canvas-initial.png"
+      }
+    ],
+    "with-item": [
+      {
+        "name": "initial",
+        "path": "visual-comparison/prod-with-item-initial.png"
+      },
+      {
+        "name": "add-item",
+        "path": "visual-comparison/prod-with-item-add-item.png"
+      }
+    ],
+    "item-selected": [
+      {
+        "name": "initial",
+        "path": "visual-comparison/prod-item-selected-initial.png"
+      },
+      {
+        "name": "add-item",
+        "path": "visual-comparison/prod-item-selected-add-item.png"
+      },
+      {
+        "name": "select-item",
+        "path": "visual-comparison/prod-item-selected-select-item.png"
+      }
+    ],
+    "floating-toolbar": [
+      {
+        "name": "initial",
+        "path": "visual-comparison/prod-floating-toolbar-initial.png"
+      },
+      {
+        "name": "add-and-select",
+        "path": "visual-comparison/prod-floating-toolbar-add-and-select.png"
+      }
+    ]
+  },
+  "local": {
+    "empty-canvas": [
+      {
+        "name": "initial",
+        "path": "visual-comparison/local-empty-canvas-initial.png"
+      }
+    ],
+    "with-item": [
+      {
+        "name": "initial",
+        "path": "visual-comparison/local-with-item-initial.png"
+      },
+      {
+        "name": "add-item",
+        "path": "visual-comparison/local-with-item-add-item.png"
+      }
+    ],
+    "item-selected": [
+      {
+        "name": "initial",
+        "path": "visual-comparison/local-item-selected-initial.png"
+      },
+      {
+        "name": "add-item",
+        "path": "visual-comparison/local-item-selected-add-item.png"
+      },
+      {
+        "name": "select-item",
+        "path": "visual-comparison/local-item-selected-select-item.png"
+      }
+    ],
+    "floating-toolbar": [
+      {
+        "name": "initial",
+        "path": "visual-comparison/local-floating-toolbar-initial.png"
+      },
+      {
+        "name": "add-and-select",
+        "path": "visual-comparison/local-floating-toolbar-add-and-select.png"
+      }
+    ]
+  },
+  "timestamp": "2025-12-09T14:43:24.501Z"
+}
