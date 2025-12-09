@@ -995,6 +995,27 @@ class Blueprint3D extends Component {
           }
           break;
 
+        case 'd':
+        case 'D':
+          // Duplicate selected item with Ctrl+D or Cmd+D (from bundle lines 5196-5219)
+          if ((event.ctrlKey || event.metaKey) && this.selectedItem) {
+            console.log('📋 Duplicating selected item:', this.selectedItem.metadata?.itemName);
+            this.duplicateSelectedItem();
+            event.preventDefault();
+          }
+          break;
+
+        case 'f':
+        case 'F':
+          // Flip selected item horizontally (from bundle line 23739)
+          // Only works for wall items (InWallItem) - other items have stub method
+          if (this.selectedItem) {
+            console.log('🔄 Flipping selected item:', this.selectedItem.metadata?.itemName);
+            this.selectedItem.flipHorizontal();
+            event.preventDefault();
+          }
+          break;
+
         default:
           // Other keys - no action
           break;
@@ -1003,7 +1024,7 @@ class Blueprint3D extends Component {
 
     // Add keyboard event listener
     document.addEventListener('keydown', this.keyboardHandler);
-    console.log('✅ Keyboard shortcuts enabled (Delete, Backspace, Escape)');
+    console.log('✅ Keyboard shortcuts enabled (Delete, Backspace, Escape, Ctrl+D, F)');
   };
 
   /**
@@ -1041,6 +1062,56 @@ class Blueprint3D extends Component {
   };
 
   /**
+   * **NEW: Duplicate selected item (from bundle lines 5196-5219)**
+   * Creates a copy of the currently selected item at a slightly offset position
+   */
+  duplicateSelectedItem = async () => {
+    if (!this.selectedItem) return;
+
+    const item = this.selectedItem;
+
+    try {
+      // Extract item properties (from bundle line 5207)
+      const metadata = item.metadata;
+      const options = item.getOptions ? item.getOptions() : {};
+      const position = item.position.clone();
+      const rotation = item.rotation.y;
+
+      // Offset position slightly so duplicate doesn't overlap exactly
+      position.x += 0.3; // 30cm offset
+      position.z += 0.3;
+
+      console.log('📋 Duplicating item:', {
+        type: metadata.type,
+        model: metadata.model,
+        position: { x: position.x, y: position.y, z: position.z },
+        rotation
+      });
+
+      // Add duplicate item to scene (from bundle line 5207)
+      const duplicateItem = await this.model.scene.addItem(
+        metadata.type,
+        metadata.model,
+        metadata,
+        position,
+        rotation,
+        options
+      );
+
+      if (duplicateItem) {
+        // Select the new duplicate item
+        this.selectItem(duplicateItem);
+        console.log('✅ Item duplicated successfully');
+      }
+
+      return duplicateItem;
+    } catch (error) {
+      console.error('❌ Failed to duplicate item:', error);
+      return null;
+    }
+  };
+
+  /**
    * PHASE 2B Priority 2: Handle mouse down in 3D view (start drag or select)
    * Extracted from production bundle function H (mousedown handler) lines 4100-4150
    */
@@ -1071,9 +1142,13 @@ class Blueprint3D extends Component {
         this.selectItem(clickedItem);
       }
 
-      // Start drag operation
-      this.isDragging = true;
-      this.dragStartPosition = clickedItem.position.clone();
+      // Start drag operation (only if item is not fixed/locked)
+      if (!clickedItem.fixed) {
+        this.isDragging = true;
+        this.dragStartPosition = clickedItem.position.clone();
+      } else {
+        console.log('🔒 Item is locked, cannot drag');
+      }
 
       // Calculate drag offset (distance from item center to click point)
       const intersectPoint = this.getIntersectionPoint();
@@ -1255,6 +1330,12 @@ class Blueprint3D extends Component {
     // **NEW: Rotation support with middle mouse button (from bundle lines 4969-4972)**
     // If middle mouse button (button 4) is held and item is selected, rotate instead of move
     if (this.isDragging && this.selectedItem && event.buttons === 4) {
+      // Check if item is locked
+      if (this.selectedItem.fixed) {
+        console.log('🔒 Item is locked, cannot rotate');
+        return;
+      }
+
       // Middle mouse button - rotate item
       const deltaX = event.clientX - this.lastMouseX;
       const currentRotation = this.selectedItem.rotation.y;
@@ -1279,6 +1360,12 @@ class Blueprint3D extends Component {
 
     // If dragging, move the selected item (left mouse button = 1)
     if (this.isDragging && this.selectedItem && event.buttons === 1) {
+      // Check if item is locked (defensive check - should be prevented in mousedown)
+      if (this.selectedItem.fixed) {
+        console.log('🔒 Item is locked, cannot drag');
+        return;
+      }
+
       // Set grabbing cursor
       this.setCursor('grabbing');
 

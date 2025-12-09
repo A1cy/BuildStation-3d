@@ -525,6 +525,18 @@ class BaseItem extends THREE.Group {
   }
 
   /**
+   * Flip item horizontally (extracted from bundle line 2513)
+   * Stub method - only wall items (InWallItem) can be flipped
+   * Overridden in InWallItem class with actual implementation
+   */
+  flipHorizontal() {
+    // Stub - only wall items support flipping
+    // InWallItem class overrides this with:
+    // this.flipped = !this.flipped;
+    // this.rotation.y = (this.rotation.y + Math.PI) % (2 * Math.PI);
+  }
+
+  /**
    * Get item height (extracted from bundle line 2516)
    * @returns {number} Item height
    */
