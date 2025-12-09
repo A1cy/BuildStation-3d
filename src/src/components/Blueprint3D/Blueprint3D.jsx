@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 import { Model, Canvas2D, MODES } from '../../core/Blueprint3D';
 import FloorPlanView from '../FloorPlanner/FloorPlanView';
 import './Blueprint3D.css';
@@ -39,6 +44,25 @@ class Blueprint3D extends Component {
     this.groundPlane = null;
     this.skybox = null;
 
+    // **PHASE 2B: 3D Interaction System**
+    this.raycaster = null;  // For picking 3D objects with mouse
+    this.mouse = new THREE.Vector2();  // Normalized mouse coordinates (-1 to +1)
+    this.selectedItem = null;  // Currently selected 3D item
+    this.hoveredItem = null;  // Item under mouse cursor
+
+    // **PHASE 2B Priority 2: Drag & Drop State**
+    this.isDragging = false;  // Whether user is currently dragging an item
+    this.dragStartPosition = null;  // Item position when drag started (THREE.Vector3)
+    this.dragOffset = null;  // Offset from item center to click point (THREE.Vector3)
+    this.dragPlane = null;  // Invisible plane for raycasting during drag (THREE.Plane)
+
+    // **PHASE 2B Priority 3: Visual Feedback State**
+    this.currentCursor = 'default';  // Current cursor style
+
+    // **PHASE 2D: Post-Processing Effects**
+    this.composer = null;  // EffectComposer for post-processing
+    this.outlinePass = null;  // OutlinePass for selection highlighting
+
     // State
     this.state = {
       loading: false,
@@ -54,6 +78,7 @@ class Blueprint3D extends Component {
   componentWillUnmount() {
     this.cleanupBlueprint3D();
     window.removeEventListener('resize', this.handleWindowResize);
+    document.removeEventListener('bp3d_highlight_changed', this.handleHighlightChanged);
   }
 
   componentDidUpdate(prevProps) {
@@ -88,11 +113,20 @@ class Blueprint3D extends Component {
     });
 
     console.log('Blueprint3D initialized', this.model);
+    console.log('Floorplan walls:', this.model.floorplan.walls.length);
+    console.log('Floorplan rooms:', this.model.floorplan.rooms.length);
 
     // Initialize canvas if it was already loaded
     if (this.canvas2DRef && !this.canvas2d) {
       this.handleCanvasLoaded(this.canvas2DRef);
     }
+
+    // CRITICAL FIX: Force initial 3D update after Model creates default room
+    // The callback above may not fire for the initial room creation
+    setTimeout(() => {
+      console.log('🔄 Forcing initial 3D floor plan update...');
+      this.update3DFloorPlan();
+    }, 100);
   };
 
   /**
@@ -167,15 +201,22 @@ class Blueprint3D extends Component {
     const height = container.clientHeight;
 
     // Create renderer
-    this.renderer = new THREE.WebGLRenderer({ 
+    this.renderer = new THREE.WebGLRenderer({
       antialias: true,
-      alpha: true 
+      alpha: true  // Enable transparency
     });
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.renderer.setClearColor(0x87ceeb, 1); // Sky blue background
+
+    // PRODUCTION MATCH: Transparent background
+    this.renderer.setClearColor(0x000000, 0); // Transparent (alpha = 0)
+
+    // PRODUCTION QUALITY: Better tone mapping and encoding
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.0;
+    this.renderer.outputEncoding = THREE.sRGBEncoding;
 
     // Add to DOM
     this.renderer.domElement.style.position = 'absolute';
@@ -186,8 +227,13 @@ class Blueprint3D extends Component {
 
     // Create camera
     this.camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
-    this.camera.position.set(12, 10, 12);
+    // Camera position adjusted for better 6m x 4m room view
+    // (8, 8, 8) gives ~14m distance = 3.8x room half-diagonal (ideal 2-4x range)
+    this.camera.position.set(8, 8, 8);
     this.camera.lookAt(0, 1, 0);
+
+    console.log('📷 Camera position:', this.camera.position);
+    console.log('📷 Camera distance from origin:', Math.sqrt(8*8 + 8*8 + 8*8).toFixed(1), 'meters');
 
     // Add OrbitControls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -198,14 +244,46 @@ class Blueprint3D extends Component {
     this.controls.maxDistance = 50;
     this.controls.maxPolarAngle = Math.PI / 2; // Don't go below ground
 
+    // **PHASE 2B: Initialize Raycaster for 3D object picking**
+    this.raycaster = new THREE.Raycaster();
+    console.log('✅ Raycaster initialized for 3D object picking');
+
+    // **PHASE 2B Priority 2: Initialize drag plane (horizontal at Y=0)**
+    this.dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    console.log('✅ Drag plane initialized for item dragging');
+
+    // **PHASE 2B: Setup mouse event handlers for item selection and dragging**
+    this.setup3DInteractionHandlers();
+
     // Create enhanced lighting
     this.createLighting();
+
+    // Create environment map for PBR materials (glass, metal)
+    const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+    pmremGenerator.compileEquirectangularShader();
+
+    // Create simple gradient environment for reflections
+    const envScene = new THREE.Scene();
+    envScene.background = new THREE.Color(0xe0e0e0);
+
+    const envMap = pmremGenerator.fromScene(envScene).texture;
+    this.model.scene.environment = envMap;
+
+    pmremGenerator.dispose();
+
+    console.log('✅ Environment map created for PBR materials');
 
     // Create ground plane
     this.createGroundPlane();
 
     // Create skybox
     this.createSkybox();
+
+    // **PHASE 2D: Setup post-processing effects**
+    this.setupPostProcessing();
+
+    // **Setup highlight event listener**
+    document.addEventListener('bp3d_highlight_changed', this.handleHighlightChanged);
 
     // Start render loop
     this.animate();
@@ -215,15 +293,15 @@ class Blueprint3D extends Component {
    * Create enhanced lighting system
    */
   createLighting = () => {
-    // Ambient light (soft overall illumination)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    // PRODUCTION QUALITY: Brighter ambient light
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7); // Increased from 0.5
     this.model.scene.add(ambientLight);
 
-    // Main directional light (sun)
-    const sunLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    // Main directional light (sun) - slightly dimmer for softer shadows
+    const sunLight = new THREE.DirectionalLight(0xffffff, 0.8); // Reduced from 1.0
     sunLight.position.set(500, 1000, 500);
     sunLight.castShadow = true;
-    
+
     // Configure shadow properties
     sunLight.shadow.mapSize.width = 2048;
     sunLight.shadow.mapSize.height = 2048;
@@ -233,16 +311,18 @@ class Blueprint3D extends Component {
     sunLight.shadow.camera.right = 500;
     sunLight.shadow.camera.top = 500;
     sunLight.shadow.camera.bottom = -500;
-    
+    sunLight.shadow.radius = 4; // Softer shadow edges
+    sunLight.shadow.bias = -0.0001; // Better shadow quality
+
     this.model.scene.add(sunLight);
 
-    // Hemisphere light (gradient from sky to ground)
-    const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x545454, 0.3);
+    // PRODUCTION QUALITY: Brighter hemisphere light
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.5); // Increased from 0.3
     hemiLight.position.set(0, 500, 0);
     this.model.scene.add(hemiLight);
 
-    // Fill light (soften shadows)
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    // PRODUCTION QUALITY: Brighter fill light
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.4); // Increased from 0.3
     fillLight.position.set(-500, 300, -500);
     this.model.scene.add(fillLight);
   };
@@ -306,10 +386,95 @@ class Blueprint3D extends Component {
   };
 
   /**
+   * **PHASE 2D: Setup post-processing effects (OutlinePass + FXAA)**
+   * Extracted from production bundle lines 4797-4813
+   */
+  setupPostProcessing = () => {
+    if (!this.renderer || !this.camera || !this.model) return;
+
+    const width = this.containerRef.current.clientWidth;
+    const height = this.containerRef.current.clientHeight;
+
+    // Create EffectComposer
+    this.composer = new EffectComposer(this.renderer);
+
+    // Add RenderPass (basic scene rendering)
+    const renderPass = new RenderPass(this.model.scene.getScene(), this.camera);
+    this.composer.addPass(renderPass);
+
+    // Add OutlinePass (selection highlighting)
+    this.outlinePass = new OutlinePass(
+      new THREE.Vector2(width, height),
+      this.model.scene.getScene(),
+      this.camera
+    );
+
+    // Configure OutlinePass properties (bundle lines 4803-4809)
+    this.outlinePass.renderToScreen = false;  // Will be overridden by FXAA pass
+    this.outlinePass.edgeStrength = 20;  // Outline thickness
+    this.outlinePass.edgeGlow = 0.3;  // Glow intensity
+    this.outlinePass.edgeThickness = 0.5;  // Edge thickness
+    this.outlinePass.pulsePeriod = 2;  // Pulse animation speed
+    this.outlinePass.visibleEdgeColor = new THREE.Color(0, 0, 1);  // Blue outline
+    this.outlinePass.hiddenEdgeColor = new THREE.Color(0, 0, 1);  // Blue outline (hidden)
+
+    // Enable morph targets for outline rendering
+    if (this.outlinePass.depthMaterial) {
+      this.outlinePass.depthMaterial.morphTargets = true;
+    }
+    if (this.outlinePass.prepareMaskMaterial) {
+      this.outlinePass.prepareMaskMaterial.morphTargets = true;
+    }
+
+    this.composer.addPass(this.outlinePass);
+
+    // Add FXAA antialiasing pass (bundle lines 4810-4811)
+    const fxaaPass = new ShaderPass(FXAAShader);
+    fxaaPass.uniforms['resolution'].value.set(1 / width, 1 / height);
+    fxaaPass.renderToScreen = true;  // Final pass renders to screen
+    this.composer.addPass(fxaaPass);
+
+    console.log('✅ Post-processing setup complete (OutlinePass + FXAA)');
+  };
+
+  /**
+   * **PHASE 2D: Update outline effect for selected objects**
+   * Called when selection changes
+   * @param {Array<THREE.Mesh>} meshes - Array of meshes to outline
+   */
+  updateOutline = (meshes) => {
+    if (!this.outlinePass) return;
+
+    // Clear previous selection
+    this.outlinePass.selectedObjects = [];
+
+    // Add new selection
+    if (meshes && meshes.length > 0) {
+      this.outlinePass.selectedObjects = meshes;
+      console.log('✅ Outline updated:', meshes.length, 'objects');
+    }
+  };
+
+  /**
+   * Handle highlight changed event from items
+   * Updates outline pass with highlighted objects
+   */
+  handleHighlightChanged = (event) => {
+    if (!this.outlinePass) return;
+
+    const objects = event.detail?.objects || [];
+    this.updateOutline(objects);
+  };
+
+  /**
    * Update 3D floor plan visualization (walls, rooms)
    */
   update3DFloorPlan = () => {
     if (!this.model || !this.model.floorplan) return;
+
+    console.log('🎨 update3DFloorPlan called');
+    console.log('  Walls to render:', this.model.floorplan.walls.length);
+    console.log('  Rooms to render:', this.model.floorplan.rooms.length);
 
     // Remove existing floor plan meshes
     if (this.floorPlanGroup) {
@@ -322,10 +487,12 @@ class Blueprint3D extends Component {
     // Create wall meshes
     const wallHeight = 2.5; // 2.5 meters tall
     const wallThickness = 0.1; // 10cm thick
+    // PRODUCTION QUALITY: Brighter, cleaner walls
     const wallMaterial = new THREE.MeshStandardMaterial({
-      color: 0xeeeeee,
-      roughness: 0.9,
-      metalness: 0.1
+      color: 0xffffff,  // Pure white (brighter than 0xeeeeee)
+      roughness: 0.7,   // Less rough (slightly shinier)
+      metalness: 0.0,   // No metalness (matte finish)
+      envMapIntensity: 0.5
     });
 
     this.model.floorplan.walls.forEach((wall) => {
@@ -360,10 +527,12 @@ class Blueprint3D extends Component {
     });
 
     // Create floor meshes for rooms
+    // PRODUCTION QUALITY: Lighter, smoother floor
     const floorMaterial = new THREE.MeshStandardMaterial({
-      color: 0xcccccc,
-      roughness: 0.8,
-      metalness: 0.2
+      color: 0xe0e0e0,  // Lighter gray (brighter than 0xcccccc)
+      roughness: 0.6,   // Smoother finish
+      metalness: 0.1,   // Less metallic
+      envMapIntensity: 0.3
     });
 
     this.model.floorplan.rooms.forEach((room) => {
@@ -396,7 +565,9 @@ class Blueprint3D extends Component {
     // Add floor plan group to scene
     this.model.scene.add(this.floorPlanGroup);
 
-    console.log('Floor plan updated: walls created, rooms rendered');
+    console.log('✅ Floor plan updated: walls created, rooms rendered');
+    console.log('  FloorPlanGroup children:', this.floorPlanGroup.children.length);
+    console.log('  Total scene objects:', this.model.scene.getScene().children.length);
   };
 
   /**
@@ -412,6 +583,11 @@ class Blueprint3D extends Component {
     this.camera.updateProjectionMatrix();
 
     this.renderer.setSize(width, height);
+
+    // **PHASE 2D: Update composer size**
+    if (this.composer) {
+      this.composer.setSize(width, height);
+    }
   };
 
   /**
@@ -425,8 +601,11 @@ class Blueprint3D extends Component {
       this.controls.update();
     }
 
-    // Render scene
-    if (this.renderer && this.camera && this.model) {
+    // Render scene with post-processing
+    if (this.composer) {
+      this.composer.render();
+    } else if (this.renderer && this.camera && this.model) {
+      // Fallback to direct render if composer not ready
       this.renderer.render(this.model.scene.getScene(), this.camera);
     }
   };
@@ -735,6 +914,375 @@ class Blueprint3D extends Component {
 
     this.renderer.render(this.model.scene.getScene(), this.camera);
     return this.renderer.domElement.toDataURL('image/png');
+  };
+
+  /**
+   * PHASE 2B: Setup 3D interaction handlers (raycasting, selection, drag-and-drop)
+   * Extracted from production bundle lines 4100-4300
+   */
+  setup3DInteractionHandlers = () => {
+    if (!this.renderer || !this.renderer.domElement) return;
+
+    const canvas = this.renderer.domElement;
+
+    // **Mouse down handler** - Start drag or selection
+    canvas.addEventListener('mousedown', (e) => {
+      this.handle3DMouseDown(e);
+    });
+
+    // **Mouse move handler** - Drag item or hover
+    canvas.addEventListener('mousemove', (e) => {
+      this.handle3DMouseMove(e);
+    });
+
+    // **Mouse up handler** - End drag
+    canvas.addEventListener('mouseup', (e) => {
+      this.handle3DMouseUp(e);
+    });
+
+    console.log('✅ 3D interaction handlers setup complete (selection + drag & drop)');
+  };
+
+  /**
+   * PHASE 2B Priority 2: Handle mouse down in 3D view (start drag or select)
+   * Extracted from production bundle function H (mousedown handler) lines 4100-4150
+   */
+  handle3DMouseDown = (event) => {
+    if (this.props.viewMode !== '3d') return;
+
+    // Disable OrbitControls while dragging to prevent camera movement
+    if (this.controls) {
+      this.controls.enabled = false;
+    }
+
+    // Update mouse position
+    this.updateMousePosition(event);
+
+    // Raycast to find item under cursor
+    const clickedItem = this.getItemAtMouse();
+
+    if (clickedItem) {
+      // Item clicked - select and start drag
+      console.log('🖱️ Item mousedown:', clickedItem);
+
+      // Select item if not already selected
+      if (this.selectedItem !== clickedItem) {
+        this.selectItem(clickedItem);
+      }
+
+      // Start drag operation
+      this.isDragging = true;
+      this.dragStartPosition = clickedItem.position.clone();
+
+      // Calculate drag offset (distance from item center to click point)
+      const intersectPoint = this.getIntersectionPoint();
+      if (intersectPoint) {
+        this.dragOffset = new THREE.Vector3().subVectors(
+          clickedItem.position,
+          intersectPoint
+        );
+      } else {
+        this.dragOffset = new THREE.Vector3(0, 0, 0);
+      }
+
+      console.log('🎯 Drag started at:', this.dragStartPosition);
+    } else {
+      // Empty space clicked - deselect all
+      console.log('🖱️ Empty space clicked - deselecting');
+      this.deselectAllItems();
+
+      // Re-enable OrbitControls for camera movement
+      if (this.controls) {
+        this.controls.enabled = true;
+      }
+    }
+  };
+
+  /**
+   * PHASE 2B: Update normalized mouse coordinates from screen coordinates
+   * @param {MouseEvent} event - Mouse event
+   */
+  updateMousePosition = (event) => {
+    if (!this.renderer) return;
+
+    const canvas = this.renderer.domElement;
+    const rect = canvas.getBoundingClientRect();
+
+    // Convert to normalized device coordinates (-1 to +1)
+    this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  };
+
+  /**
+   * PHASE 2B: Raycast to find item under mouse cursor
+   * Extracted from production bundle getIntersections + itemIntersection methods
+   * @returns {Object|null} Item under cursor or null
+   */
+  getItemAtMouse = () => {
+    if (!this.raycaster || !this.camera || !this.model) return null;
+
+    // Update raycaster with camera and mouse position
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    // Get all items from scene
+    const items = this.model.scene.items || [];
+    if (items.length === 0) return null;
+
+    // Collect all meshes from all items
+    const meshes = [];
+    items.forEach(item => {
+      if (item.childMeshes && Array.isArray(item.childMeshes)) {
+        item.childMeshes.forEach(mesh => {
+          if (mesh && mesh.isMesh) {
+            meshes.push(mesh);
+          }
+        });
+      }
+    });
+
+    if (meshes.length === 0) return null;
+
+    // Perform raycasting
+    const intersects = this.raycaster.intersectObjects(meshes, false);
+
+    if (intersects.length > 0) {
+      // Find the item that owns the intersected mesh
+      const intersectedMesh = intersects[0].object;
+
+      for (let item of items) {
+        if (item.childMeshes && item.childMeshes.includes(intersectedMesh)) {
+          return item;
+        }
+        // Also check if mesh is a child of an item's child (nested groups)
+        if (item.childMeshes) {
+          for (let childMesh of item.childMeshes) {
+            if (childMesh === intersectedMesh || childMesh.children.includes(intersectedMesh)) {
+              return item;
+            }
+          }
+        }
+      }
+    }
+
+    return null;
+  };
+
+  /**
+   * PHASE 2B: Select an item (extracted from production setSelectedObject)
+   * @param {Object} item - Item to select
+   */
+  selectItem = (item) => {
+    if (!item) return;
+
+    // Already selected?
+    if (this.selectedItem === item) return;
+
+    // Deselect previous item
+    if (this.selectedItem) {
+      this.selectedItem.setUnselected();
+    }
+
+    // Select new item
+    this.selectedItem = item;
+    item.setSelected();
+
+    // **PHASE 2D: Update outline for selected item**
+    if (item.childMeshes && item.childMeshes.length > 0) {
+      this.updateOutline(item.childMeshes);
+    }
+
+    // Notify parent component (App.jsx)
+    if (typeof this.props.onItemSelected === 'function') {
+      this.props.onItemSelected(item);
+    }
+
+    console.log('✅ Item selected:', item.metadata?.itemName || 'Unknown');
+  };
+
+  /**
+   * PHASE 2B: Deselect all items (extracted from production setSelectedObject(null))
+   */
+  deselectAllItems = () => {
+    if (this.selectedItem) {
+      this.selectedItem.setUnselected();
+      this.selectedItem = null;
+
+      // **PHASE 2D: Clear outline**
+      this.updateOutline([]);
+
+      // Notify parent component (App.jsx)
+      if (typeof this.props.onItemUnselected === 'function') {
+        this.props.onItemUnselected();
+      }
+
+      console.log('✅ All items deselected');
+    }
+  };
+
+  /**
+   * PHASE 2B Priority 2: Handle mouse move in 3D view (drag item)
+   * **ENHANCED Phase 2B Priority 3: Added hover detection and cursor changes**
+   * Extracted from production bundle function S (mousemove handler) lines 4150-4200
+   */
+  handle3DMouseMove = (event) => {
+    if (this.props.viewMode !== '3d') return;
+
+    // Update mouse position
+    this.updateMousePosition(event);
+
+    // If dragging, move the selected item
+    if (this.isDragging && this.selectedItem) {
+      // Set grabbing cursor
+      this.setCursor('grabbing');
+
+      // Get intersection point with drag plane
+      const intersectPoint = this.getIntersectionPoint();
+
+      if (intersectPoint) {
+        // Apply drag offset to maintain click position relative to item center
+        const newPosition = new THREE.Vector3().addVectors(
+          intersectPoint,
+          this.dragOffset
+        );
+
+        // Move item to new position
+        this.selectedItem.moveToPosition(newPosition);
+
+        // console.log('🎯 Dragging to:', newPosition);
+      }
+    } else {
+      // **Phase 2B Priority 3: Hover detection**
+      const hoveredItem = this.getItemAtMouse();
+
+      if (hoveredItem !== this.hoveredItem) {
+        // Hover state changed
+        if (this.hoveredItem && this.hoveredItem !== this.selectedItem) {
+          // Clear previous hover
+          this.hoveredItem.hover = false;
+          this.hoveredItem.updateHighlight();
+        }
+
+        this.hoveredItem = hoveredItem;
+
+        if (this.hoveredItem) {
+          // Set new hover
+          this.hoveredItem.hover = true;
+          this.hoveredItem.updateHighlight();
+
+          // Set grab cursor on hover
+          this.setCursor('grab');
+        } else {
+          // No hover - default cursor
+          this.setCursor('default');
+        }
+      }
+    }
+  };
+
+  /**
+   * PHASE 2B Priority 2: Handle mouse up in 3D view (end drag)
+   * **ENHANCED Phase 2A Priority 2: Added snap-to-grid**
+   * **ENHANCED Phase 2B Priority 3: Added cursor reset**
+   * Extracted from production bundle function C (mouseup handler) lines 4200-4250
+   */
+  handle3DMouseUp = (event) => {
+    if (this.props.viewMode !== '3d') return;
+
+    // End drag operation
+    if (this.isDragging && this.selectedItem) {
+      this.isDragging = false;
+
+      // **Phase 2A Priority 2: Apply snap-to-grid**
+      const position = this.selectedItem.position.clone();
+      this.selectedItem.getSnapPosition(position);
+
+      // Move to snapped position (includes collision check)
+      this.selectedItem.moveToPosition(position);
+
+      console.log('🎯 Drag ended at:', this.selectedItem.position);
+
+      // **Phase 2B Priority 3: Reset cursor to grab (still hovering item)**
+      this.setCursor('grab');
+    }
+
+    // Re-enable OrbitControls
+    if (this.controls) {
+      this.controls.enabled = true;
+    }
+  };
+
+  /**
+   * PHASE 2B Priority 2: Get intersection point with drag plane
+   * **ENHANCED Phase 2C: Support for wall items with custom intersection planes**
+   * Raycast from mouse to find where ray intersects horizontal plane at Y=0
+   * @returns {THREE.Vector3|null} Intersection point or null
+   */
+  getIntersectionPoint = () => {
+    if (!this.raycaster || !this.camera) return null;
+
+    // Update raycaster with current mouse position
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    // **PHASE 2C: Check if selected item has custom intersection planes (wall items)**
+    if (this.selectedItem && typeof this.selectedItem.customIntersectionPlanes === 'function') {
+      const customPlanes = this.selectedItem.customIntersectionPlanes();
+
+      if (customPlanes && customPlanes.length > 0) {
+        // Raycast against wall planes
+        const intersects = this.raycaster.intersectObjects(customPlanes, true);
+
+        if (intersects.length > 0) {
+          const intersectPoint = intersects[0].point.clone();
+
+          // Apply boundMove to constrain to wall surface
+          if (typeof this.selectedItem.boundMove === 'function') {
+            this.selectedItem.boundMove(intersectPoint);
+          }
+
+          return intersectPoint;
+        }
+      }
+    }
+
+    // Fall back to default floor plane for non-wall items
+    if (!this.dragPlane) return null;
+
+    const intersectPoint = new THREE.Vector3();
+    const didIntersect = this.raycaster.ray.intersectPlane(
+      this.dragPlane,
+      intersectPoint
+    );
+
+    if (didIntersect) {
+      return intersectPoint;
+    }
+
+    return null;
+  };
+
+  /**
+   * **PHASE 2B Priority 3: Visual Feedback**
+   * Set cursor style for 3D canvas
+   * @param {string} cursor - Cursor style ('default', 'pointer', 'grab', 'grabbing')
+   */
+  setCursor = (cursor) => {
+    if (this.currentCursor === cursor) return; // Already set
+
+    if (!this.renderer || !this.renderer.domElement) return;
+
+    const canvas = this.renderer.domElement;
+
+    // Map cursor names to CSS cursor values
+    const cursorMap = {
+      'default': 'default',
+      'pointer': 'pointer',
+      'grab': 'grab',
+      'grabbing': 'grabbing'
+    };
+
+    const cursorStyle = cursorMap[cursor] || 'default';
+    canvas.style.cursor = cursorStyle;
+    this.currentCursor = cursor;
   };
 
   /**

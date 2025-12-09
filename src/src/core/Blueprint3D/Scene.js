@@ -207,6 +207,40 @@ class Scene {
   }
 
   /**
+   * Build default options from product metadata
+   * Extracts texture and style defaults from the materials array in metadata
+   *
+   * @param {Object} metadata - Product metadata from catalog
+   * @returns {Object} Options object with default textures and styles
+   */
+  buildDefaultOptions(metadata) {
+    const options = { textures: {}, styles: {} };
+
+    // Apply first texture from each material as default
+    if (metadata.materials && Array.isArray(metadata.materials)) {
+      console.log('📦 Building default options from', metadata.materials.length, 'materials');
+
+      metadata.materials.forEach(mat => {
+        const defaultTexture = mat.types[0]; // First texture = default
+        if (defaultTexture && defaultTexture.texture) {
+          options.textures[mat.name_in_model] = {
+            material: {
+              texture: defaultTexture.texture,
+              color: defaultTexture.color || 0xFFFFFF
+            },
+            size: defaultTexture.size || { w: 2.0, h: 1.0 }
+          };
+          console.log(`  ✓ ${mat.name_in_model}: ${defaultTexture.label}`);
+        }
+      });
+    } else {
+      console.log('⚠️ No materials metadata found');
+    }
+
+    return options;
+  }
+
+  /**
    * Add an item to the scene
    * @param {number} itemType - Item type ID
    * @param {string} modelUrl - URL to GLTF model
@@ -279,6 +313,14 @@ class Scene {
 
           const morphUVs = [morphUVsHeight, morphUVsWidth, morphUVsDepth];
 
+          // Build default options from metadata if options not provided
+          let itemOptions = options;
+          if (!itemOptions || Object.keys(itemOptions).length === 0) {
+            console.log('📦 No options provided, building defaults from metadata...');
+            itemOptions = this.buildDefaultOptions(metadata);
+            console.log('📦 Built options:', itemOptions);
+          }
+
           // Create item using factory
           const ItemClass = ItemFactory.getClass(itemType);
           const item = new ItemClass(
@@ -290,13 +332,13 @@ class Scene {
             meshes,
             position,
             rotation,
-            options
+            itemOptions
           );
 
           console.log('item line 185', item);
 
           // Initialize item
-          item.initObject(meshes, position, rotation, options);
+          item.initObject(meshes, position, rotation, itemOptions);
 
           console.log('item 187', item);
 

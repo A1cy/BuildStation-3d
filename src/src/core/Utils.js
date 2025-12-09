@@ -280,6 +280,42 @@ class Utils {
 
     return inside;
   }
+
+  /**
+   * **PHASE 2A Priority 2: Collision Detection**
+   * Check if polygon1 is completely inside polygon2
+   * @param {Array<{x: number, y: number}>} polygon1 - Inner polygon
+   * @param {Array<{x: number, y: number}>} polygon2 - Outer polygon
+   * @returns {boolean} True if polygon1 is completely inside polygon2
+   */
+  static polygonInsidePolygon(polygon1, polygon2) {
+    // Check if all points of polygon1 are inside polygon2
+    for (let i = 0; i < polygon1.length; i++) {
+      const point = polygon1[i];
+      if (!this.pointInPolygon(point.x, point.y, polygon2)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * **PHASE 2A Priority 2: Collision Detection**
+   * Check if polygon1 is completely outside polygon2 (no overlap)
+   * @param {Array<{x: number, y: number}>} polygon1 - First polygon
+   * @param {Array<{x: number, y: number}>} polygon2 - Second polygon
+   * @returns {boolean} True if polygon1 is completely outside polygon2
+   */
+  static polygonOutsidePolygon(polygon1, polygon2) {
+    // Check if any point of polygon1 is inside polygon2
+    for (let i = 0; i < polygon1.length; i++) {
+      const point = polygon1[i];
+      if (this.pointInPolygon(point.x, point.y, polygon2)) {
+        return false; // At least one point is inside
+      }
+    }
+    return true; // All points are outside
+  }
 }
 
 export default Utils;

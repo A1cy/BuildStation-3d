@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug 3D Scene</title>
+    <style>
+        body { margin: 0; font-family: monospace; }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #0f0;
+            padding: 15px;
+            font-size: 12px;
+            max-width: 400px;
+            z-index: 1000;
+        }
+        #info h3 { margin: 0 0 10px 0; color: #0ff; }
+        #info div { margin: 5px 0; }
+        .good { color: #0f0; }
+        .bad { color: #f00; }
+        .warn { color: #ff0; }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <h3>🔍 Debug Info</h3>
+        <div id="status">Initializing...</div>
+    </div>
+    <div id="root" style="height:100vh"></div>
+
+    <script type="module" src="/dist/js/index.bundle.js"></script>
+
+    <script>
+        // Wait for React to mount
+        setTimeout(() => {
+            const info = document.getElementById('status');
+            let html = '';
+
+            // Check root
+            const root = document.getElementById('root');
+            html += `<div class="${root.children.length > 0 ? 'good' : 'bad'}">✓ Root children: ${root.children.length}</div>`;
+
+            // Check canvas
+            const canvas = document.querySelector('canvas');
+            if (canvas) {
+                const box = canvas.getBoundingBox && canvas.getBoundingBox();
+                html += `<div class="good">✓ Canvas found: ${canvas.width}x${canvas.height}</div>`;
+                html += `<div class="good">✓ Canvas displayed: ${canvas.style.display !== 'none' ? 'Yes' : 'No'}</div>`;
+            } else {
+                html += `<div class="bad">✗ Canvas NOT found!</div>`;
+            }
+
+            // Check WebGL
+            if (canvas) {
+                const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+                html += `<div class="${gl ? 'good' : 'bad'}">${gl ? '✓' : '✗'} WebGL context: ${gl ? 'YES' : 'NO'}</div>`;
+            }
+
+            // Check for THREE.js
+            html += `<div class="${typeof THREE !== 'undefined' ? 'good' : 'bad'}">${typeof THREE !== 'undefined' ? '✓' : '✗'} THREE.js: ${typeof THREE !== 'undefined' ? 'loaded' : 'missing'}</div>`;
+
+            // Check for Blueprint3D components
+            const bp3d = document.querySelector('[class*="blueprint"]');
+            html += `<div class="${bp3d ? 'good' : 'warn'}">${bp3d ? '✓' : '⚠'} Blueprint3D component: ${bp3d ? 'found' : 'not found'}</div>`;
+
+            // Check controls
+            const controls = document.querySelectorAll('.control-button, .float-toolbar-button');
+            html += `<div class="${controls.length > 0 ? 'good' : 'warn'}">ⓘ Control elements: ${controls.length}</div>`;
+
+            // Check for FloatingToolbar
+            const floatToolbar = document.querySelector('.float-toolbar');
+            html += `<div class="${floatToolbar ? 'good' : 'warn'}">ⓘ FloatingToolbar: ${floatToolbar ? 'in DOM' : 'not in DOM'}</div>`;
+
+            // Check for ControlsSection
+            const controlsSection = document.querySelector('.controls-section');
+            html += `<div class="${controlsSection ? 'good' : 'warn'}">ⓘ ControlsSection: ${controlsSection ? 'in DOM' : 'not in DOM'}</div>`;
+
+            // Console errors
+            const errors = window.consoleErrors || [];
+            html += `<div class="${errors.length === 0 ? 'good' : 'bad'}">ⓘ Console errors: ${errors.length}</div>`;
+
+            info.innerHTML = html;
+
+            // Add console logging
+            console.log('%c=== 3D Scene Debug ===', 'color: #0ff; font-size: 16px; font-weight: bold');
+            console.log('Canvas:', canvas);
+            if (canvas) {
+                console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
+                console.log('Canvas client dimensions:', canvas.clientWidth, 'x', canvas.clientHeight);
+            }
+
+        }, 2000);
+
+        // Capture console errors
+        window.consoleErrors = [];
+        const originalError = console.error;
+        console.error = function(...args) {
+            window.consoleErrors.push(args.join(' '));
+            originalError.apply(console, args);
+        };
+    </script>
+</body>
+</html>

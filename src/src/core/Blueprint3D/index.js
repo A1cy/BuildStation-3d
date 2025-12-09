@@ -10,3 +10,4 @@ export { default as Room } from './Room';
 export { default as FloorPlan } from './FloorPlan';
 export { default as Scene } from './Scene';
 export { default as Model } from './Model';
+export { default as Configuration } from '../Configuration';

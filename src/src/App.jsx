@@ -11,6 +11,8 @@ import Sidebar from './components/Sidebar';
 import Blueprint3D from './components/Blueprint3D';
 import ProductList from './components/ProductList';
 import PropertyPanel from './components/PropertyPanel';
+import FloatingToolbar from './components/FloatingToolbar';
+import ControlsSection from './components/ControlsSection';
 
 // Data imports
 import PRODUCT_CATALOG from './data/productCatalog';
@@ -80,6 +82,52 @@ class App extends Component {
   handleDuplicateProduct = () => {
     if (this.state.selectedItem) {
       this.refBp3d.duplicateItem();
+    }
+  };
+
+  /**
+   * Delete currently selected product
+   */
+  handleDeleteProduct = () => {
+    if (this.state.selectedItem && this.refBp3d) {
+      this.refBp3d.deleteItem(this.state.selectedItem);
+      this.setState({ selectedItem: null });
+    }
+  };
+
+  /**
+   * Handle 2D pan navigation
+   */
+  handlePan = (direction) => {
+    if (this.refBp3d && this.refBp3d.pan) {
+      this.refBp3d.pan(direction);
+    }
+  };
+
+  /**
+   * Handle zoom in
+   */
+  handleZoomIn = () => {
+    if (this.refBp3d && this.refBp3d.zoomIn) {
+      this.refBp3d.zoomIn();
+    }
+  };
+
+  /**
+   * Handle zoom out
+   */
+  handleZoomOut = () => {
+    if (this.refBp3d && this.refBp3d.zoomOut) {
+      this.refBp3d.zoomOut();
+    }
+  };
+
+  /**
+   * Reset camera to home position
+   */
+  handleHome = () => {
+    if (this.refBp3d && this.refBp3d.resetCamera) {
+      this.refBp3d.resetCamera();
     }
   };
 
@@ -185,6 +233,55 @@ class App extends Component {
                   onItemUnselected={this.handleItemUnselected}
                   onSwitchMode={this.handleSwitchMode}
                 />
+
+                {/* Bottom Floating Toolbar - Item Controls */}
+                {selectedItem && viewMode === '3d' && (
+                  <FloatingToolbar
+                    info={selectedItem}
+                    onMorphAlignChanged={(align) => {
+                      if (selectedItem && selectedItem.setMorphAlign) {
+                        selectedItem.setMorphAlign(align);
+                        this.forceUpdate();
+                      }
+                    }}
+                    onLockChanged={(locked) => {
+                      if (selectedItem && selectedItem.setFixed) {
+                        selectedItem.setFixed(locked);
+                        this.forceUpdate();
+                      }
+                    }}
+                    onStackableChanged={(stackable) => {
+                      if (selectedItem && selectedItem.setStackable) {
+                        selectedItem.setStackable(stackable);
+                        this.forceUpdate();
+                      }
+                    }}
+                    onOverlappableChanged={(overlappable) => {
+                      if (selectedItem && selectedItem.setOverlappable) {
+                        selectedItem.setOverlappable(overlappable);
+                        this.forceUpdate();
+                      }
+                    }}
+                    onFlipHorizontal={() => {
+                      if (selectedItem && selectedItem.flipHorizontal) {
+                        selectedItem.flipHorizontal();
+                        this.forceUpdate();
+                      }
+                    }}
+                    onDuplicateProduct={this.handleDuplicateProduct}
+                    onDeleteActiveProduct={this.handleDeleteProduct}
+                  />
+                )}
+
+                {/* Bottom Right Controls - 2D Navigation */}
+                {viewMode === '2d' && (
+                  <ControlsSection
+                    onPan={this.handlePan}
+                    onZoomIn={this.handleZoomIn}
+                    onZoomOut={this.handleZoomOut}
+                    onHomeClicked={this.handleHome}
+                  />
+                )}
               </div>
 
               {/* Product List Panel (slides in from left) */}
